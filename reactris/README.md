@@ -15,9 +15,9 @@
 
 ### Playing Field
 
-The visible playing field is 10 x 20 (width x height) and 2 extra rows are
-used as buffering for the next tetromino. The data is stored as an array of
-22 arrays, where each of the child array, with a length of 10, contains a value
+The visible playing field is 10 x 20 (width x height) ~~and 2 extra rows are
+used as buffering for the next tetromino~~. The data is stored as an array of
+20 arrays, where each of the child array, with a length of 10, contains a value
 that indicates whether it's empty or occupied by part of one of the seven
 tetrominos.
 

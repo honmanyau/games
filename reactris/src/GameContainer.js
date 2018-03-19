@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { subscribeToCirclet } from 'circlet';
 import styled from 'styled-components';
 
+import { TETROMINO_MATRICIES } from './constants';
 import {
   incrementFrameCount,
   setFrameCount,
@@ -24,55 +25,6 @@ const Container = styled.div`
     box-sizing: border-box;
   }
 `;
-
-const x = null;
-const I = 'I';
-const O = 'O';
-const T = 'T';
-const J = 'J';
-const L = 'L';
-const S = 'S';
-const Z = 'Z';
-
-const tetrominoMatricies = {
-  I: [
-    [x, x, x, x],
-    [I, I, I, I],
-    [x, x, x, x],
-    [x, x, x, x]
-  ],
-  O: [
-    [x, x, x, x],
-    [x, O, O, x],
-    [x, O, O, x],
-    [x, x, x, x]
-  ],
-  T: [
-    [x, x, x],
-    [T, T, T],
-    [x, T, x]
-  ],
-  J: [
-    [x, x, x],
-    [J, J, J],
-    [x, x, J]
-  ],
-  L: [
-    [x, x, x],
-    [L, L, L],
-    [L, x, x]
-  ],
-  S: [
-    [x, x, x],
-    [x, S, S],
-    [S, S, x]
-  ],
-  Z: [
-    [x, x, x],
-    [Z, Z, x],
-    [x, Z, Z]
-  ]
-};
 
 class GameContainer extends Component {
   shouldComponentUpdate(nextProps, nextState) {
@@ -112,7 +64,7 @@ class GameContainer extends Component {
     const { field, tetromino, tetrominoX, tetrominoY } = this.props.reactris;
     const fieldLengthX = field[0].length;
     const fieldLengthY = field.length;
-    const matrix = tetrominoMatricies[tetromino];
+    const matrix = TETROMINO_MATRICIES[tetromino];
     const matrixLength = matrix.length;
     const nextTetrominoX = tetrominoX + x;
     const nextTetrominoY = tetrominoY + y;
@@ -174,7 +126,6 @@ class GameContainer extends Component {
       incrementFrameCount,
       setFrameCount,
       generateNewTetromino,
-      updateTetrominoPosition,
       updateField,
       unsetTetromino
     } = this.props;
@@ -196,7 +147,7 @@ class GameContainer extends Component {
 
       if (moveResult === 'cemented') {
         const newField = JSON.parse(JSON.stringify(field));
-        const matrix = tetrominoMatricies[tetromino];
+        const matrix = TETROMINO_MATRICIES[tetromino];
         const matrixLength = matrix.length;
 
         for (let r = 0; r < matrixLength; r++) {
@@ -223,13 +174,9 @@ class GameContainer extends Component {
     incrementFrameCount();
   }
 
-  draw = () => {
-
-  }
-
   render() {
     const { field, tetromino, tetrominoX, tetrominoY } = this.props.reactris;
-    const matrix = tetrominoMatricies[tetromino];
+    const matrix = TETROMINO_MATRICIES[tetromino];
 
     return (
       <Container>

@@ -44,11 +44,21 @@ const PlayingField = ({ field, matrix, tetrominoY, tetrominoX }) => {
 
   if (matrix) {
     matrix.forEach((row, rowIndex) => {
+      const rowIsEmpty = row.reduce((acc, cell) => acc && !cell, true);
+
       row.forEach((cell, cellIndex) => {
         const fieldY = tetrominoY + rowIndex;
         const fieldX = tetrominoX + cellIndex;
 
-        combinedField[fieldY][fieldX] = cell;
+        /*
+         * The code in GameContainer should already have made sure that
+         * out of bounds tetrominoes will never be passed here for rendering.
+         * The if statement below is a safety check as well as there to make
+         * sure that combinedField[fieldY] is never undefined.
+         */
+        if (!rowIsEmpty) {
+          combinedField[fieldY][fieldX] = cell;
+        }
       });
     })
   }

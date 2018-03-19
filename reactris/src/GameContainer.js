@@ -45,6 +45,7 @@ class GameContainer extends Component {
   }
 
   componentDidMount() {
+    window.addEventListener('keypress', this.handleInput, false);
     this.props.subscribeToCirclet(this.update);
   }
 
@@ -96,6 +97,7 @@ class GameContainer extends Component {
 
     if (movable) {
       this.props.updateTetrominoPosition(nextTetrominoX, nextTetrominoY);
+
       return 'moved';
     }
     else {
@@ -106,6 +108,11 @@ class GameContainer extends Component {
         return 'unmoved';
       }
     }
+  }
+
+  handleInput = (event) => {
+    event.preventDefault();
+    console.log('handleInput', event)
   }
 
   update = (render, epsilon) => {

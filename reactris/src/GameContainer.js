@@ -45,6 +45,7 @@ class GameContainer extends Component {
   }
 
   componentDidMount() {
+    // Change listener to keydown?
     window.addEventListener('keypress', this.handleInput, false);
     this.props.subscribeToCirclet(this.update);
   }
@@ -112,7 +113,23 @@ class GameContainer extends Component {
 
   handleInput = (event) => {
     event.preventDefault();
-    console.log('handleInput', event)
+
+    switch(event.key) {
+      case 'ArrowDown':
+        break;
+
+      case 'ArrowLeft':
+        break;
+
+      case 'ArrowRight':
+        break;
+
+      case ' ':
+        break;
+
+      default:
+        break;
+    }
   }
 
   update = (render, epsilon) => {
@@ -163,6 +180,9 @@ class GameContainer extends Component {
     }
 
     if (render && frameCount >= dropThreshold) {
+      // UpdateField and updateTetrominoPosition should only be here and
+      // not other functions, check else if (frameCount >= dropThreshold) block
+      // above and also this.moveTetromino
       setFrameCount(frameCount - dropThreshold);
     }
 

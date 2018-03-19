@@ -8,6 +8,7 @@
 * [Implementation Details](#implementation-details)
   * [Playing Field](#playing-field)
   * [Tetrominos](#tetrominos)
+  * [Game Loop and Rendering](#game-loop-and-rendering)
 
 ## Installation
 
@@ -34,3 +35,20 @@ matrix, the new position of a given cell after a clockwise rotation of 90˚,
 l = s - i;
 m = i;
 ```
+
+### Game Loop and Rendering
+
+A React-Redux game loop, [Circlet](http://github.com/honmanyau/circlet), that
+is based on the `window.requestAnimationFrame()` web API () is used to keep
+the (minimal) physics of the game as accurate as possible.
+
+Re-render occurs when **both** of the following conditions are met:
+
+1. When the playing field's current state changes
+2. When [Circlet](http://github.com/honmanyau/circlet) has finished looping
+through the update functions that are subscribed to it
+
+Due to the way that [Circlet](http://github.com/honmanyau/circlet) is designed
+at the time this is written (version 1.1.9), the `shouldComponentUpdate`
+lifecycle is necessary for limiting the rendering rate of the game, which
+relies on changes in the state of the game in the Redux store.

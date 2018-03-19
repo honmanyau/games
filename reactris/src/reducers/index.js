@@ -10,7 +10,7 @@ import  {
 
 
 const initialState = {
-  field: Array.from(Array(20)).map(() => Array.from(Array(10))),
+  field: Array.from(Array(21)).map(() => Array.from(Array(10))),
   speed: 1000,
   tetromino: null,
   tetrominoX: 3,

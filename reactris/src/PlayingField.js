@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 
 
-const Row  = styled.div`
+const Row = styled.div`
   display: flex;
 `;
 
@@ -34,13 +34,26 @@ const Cell = styled.div`
         return '#b9bcff';
 
       default:
-        return 'black';
+        return 'transparent';
     }
   }}
 `;
 
-const PlayingField = ({ field }) => {
-  const renderedField = field.map((row, rowIndex) => {
+const PlayingField = ({ field, matrix, tetrominoY, tetrominoX }) => {
+  const combinedField = JSON.parse(JSON.stringify(field));
+
+  if (matrix) {
+    matrix.forEach((row, rowIndex) => {
+      row.forEach((cell, cellIndex) => {
+        const fieldY = tetrominoY + rowIndex;
+        const fieldX = tetrominoX + cellIndex;
+
+        combinedField[fieldY][fieldX] = cell;
+      });
+    })
+  }
+
+  const renderedField = combinedField.map((row, rowIndex) => {
     const cells = row.map((type, cellIndex) => {
       return <Cell key={`cell-${cellIndex}`} type={type}></Cell>;
     });

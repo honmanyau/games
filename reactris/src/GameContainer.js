@@ -18,6 +18,7 @@ import PlayingField from './PlayingField';
 
 const Container = styled.div`
   border: 1px dashed crimson;
+  background: black;
 
   & > * {
     box-sizing: border-box;
@@ -62,9 +63,9 @@ const tetrominoMatricies = {
     [L, x, x]
   ],
   S: [
+    [x, x, x],
     [x, S, S],
-    [S, S, x],
-    [x, x, x]
+    [S, S, x]
   ],
   Z: [
     [x, x, x],
@@ -75,20 +76,96 @@ const tetrominoMatricies = {
 
 class GameContainer extends Component {
   shouldComponentUpdate(nextProps, nextState) {
-    const fieldString = JSON.stringify(this.props.reactris.field);
-    const nextFieldString = JSON.stringify(nextProps.reactris.field);
+    const {
+      field,
+      tetromino,
+      tetrominoY,
+      tetrominoX
+    } = this.props.reactris;
+    const {
+      field: nextField,
+      tetromino: nextTetromino,
+      tetrominoY: nextTetrominoY,
+      tetrominoX: nextTetrominoX
+    } = nextProps.reactris;
+    const states = JSON.stringify({
+      field,
+      tetromino,
+      tetrominoY,
+      tetrominoX
+    });
+    const nextStates = JSON.stringify({
+      field: nextField,
+      tetromino: nextTetromino,
+      tetrominoY: nextTetrominoY,
+      tetrominoX: nextTetrominoX
+    });
 
-    return fieldString !== nextFieldString;
+    return states !== nextStates;
   }
 
   componentDidMount() {
     this.props.subscribeToCirclet(this.update);
   }
 
-  moveTetromino = () => {
-    const { tetrominoX, tetrominoY } = this.props.reactris;
+  moveTetromino = (x, y) => {
+    const { field, tetromino, tetrominoX, tetrominoY } = this.props.reactris;
+    const fieldLengthX = field[0].length;
+    const fieldLengthY = field.length;
+    const matrix = tetrominoMatricies[tetromino];
+    const matrixLength = matrix.length;
+    const nextTetrominoX = tetrominoX + x;
+    const nextTetrominoY = tetrominoY + y;
+    const drop = y > 0;
+    let collided = false;
+    let outOfBounds = false;
 
-    this.props.updateTetrominoPosition(tetrominoX, tetrominoY + 1);
+    for (let r = matrixLength - 1; r >= 0 && !collided && !outOfBounds; r--) {
+      const row = matrix[r];
+      const rowIsEmpty = row.reduce((acc, cell) => acc && !cell, true);
+
+      if (rowIsEmpty) {
+        continue;
+      }
+
+      for (let c = 0; c < matrixLength; c++) {
+        const cell = matrix[r][c];
+        const nextCellY = nextTetrominoY + r;
+        const nextCellX = nextTetrominoX + c;
+
+        outOfBounds = outOfBounds
+          || (nextCellX < 0)
+          || (nextCellX >= fieldLengthX)
+          || (nextCellY >= fieldLengthY);
+
+        if (outOfBounds) {
+          break;
+        }
+
+        const nextCell = field[nextCellY][nextCellX];
+
+        collided = collided || (cell && nextCell);
+
+        if (collided) {
+          break;
+        }
+      }
+    }
+
+    const movable = !collided && !outOfBounds;
+
+    if (movable) {
+      this.props.updateTetrominoPosition(nextTetrominoX, nextTetrominoY);
+      return 'moved';
+    }
+    else {
+      if (drop) {
+        return 'cemented';
+      }
+      else {
+        return 'unmoved';
+      }
+    }
   }
 
   update = (render, epsilon) => {
@@ -98,7 +175,8 @@ class GameContainer extends Component {
       setFrameCount,
       generateNewTetromino,
       updateTetrominoPosition,
-      updateField
+      updateField,
+      unsetTetromino
     } = this.props;
     const {
       field,
@@ -114,12 +192,31 @@ class GameContainer extends Component {
       generateNewTetromino();
     }
     else if (frameCount >= dropThreshold) {
-      this.moveTetromino();
+      const moveResult = this.moveTetromino(0, 1);
+
+      if (moveResult === 'cemented') {
+        const newField = JSON.parse(JSON.stringify(field));
+        const matrix = tetrominoMatricies[tetromino];
+        const matrixLength = matrix.length;
+
+        for (let r = 0; r < matrixLength; r++) {
+          for (let c = 0; c < matrixLength; c++) {
+            const cell = matrix[r][c];
+
+            if (cell) {
+              newField[tetrominoY + r][tetrominoX + c] = cell;
+            }
+          }
+        }
+
+        updateField(newField);
+        unsetTetromino();
+      }
+
       setFrameCount(0);
     }
 
     if (render && frameCount >= dropThreshold) {
-      this.draw();
       setFrameCount(frameCount - dropThreshold);
     }
 
@@ -127,23 +224,21 @@ class GameContainer extends Component {
   }
 
   draw = () => {
-    const { field, tetromino, tetrominoX, tetrominoY } = this.props.reactris;
-    const newField = JSON.parse(JSON.stringify(field));
-    console.log(tetrominoX, tetrominoY, tetromino, tetrominoMatricies[tetromino])
 
-    tetrominoMatricies[tetromino].forEach((row, rowIndex) => {
-      row.forEach((type, cellIndex) => {
-        newField[tetrominoY + rowIndex][tetrominoX + cellIndex] = type;
-      });
-    });
-
-    this.props.updateField(newField);
   }
 
   render() {
+    const { field, tetromino, tetrominoX, tetrominoY } = this.props.reactris;
+    const matrix = tetrominoMatricies[tetromino];
+
     return (
       <Container>
-        <PlayingField field={this.props.reactris.field} />
+        <PlayingField
+          field={field}
+          matrix={matrix}
+          tetrominoY={tetrominoY}
+          tetrominoX={tetrominoX}
+        />
       </Container>
     );
   }

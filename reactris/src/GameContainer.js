@@ -28,29 +28,17 @@ const Container = styled.div`
 
 class GameContainer extends Component {
   shouldComponentUpdate(nextProps, nextState) {
-    const {
-      field,
-      tetromino,
-      tetrominoY,
-      tetrominoX
-    } = this.props.reactris;
-    const {
-      field: nextField,
-      tetromino: nextTetromino,
-      tetrominoY: nextTetrominoY,
-      tetrominoX: nextTetrominoX
-    } = nextProps.reactris;
     const states = JSON.stringify({
-      field,
-      tetromino,
-      tetrominoY,
-      tetrominoX
+      field: this.props.reactris.field,
+      tetromino: this.props.reactris.tetromino,
+      tetrominoY: this.props.reactris.tetrominoY,
+      tetrominoX: this.props.reactris.tetrominoX
     });
     const nextStates = JSON.stringify({
-      field: nextField,
-      tetromino: nextTetromino,
-      tetrominoY: nextTetrominoY,
-      tetrominoX: nextTetrominoX
+      field: nextProps.reactris.field,
+      tetromino: nextProps.reactris.tetromino,
+      tetrominoY: nextProps.reactris.tetrominoY,
+      tetrominoX: nextProps.reactris.tetrominoX
     });
 
     return states !== nextStates;

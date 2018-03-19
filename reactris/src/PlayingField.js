@@ -1,19 +1,7 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { subscribeToCirclet } from 'circlet';
+import React from 'react';
 import styled from 'styled-components';
 
-import { incrementFrameCount, resetFrameCount, updateField } from './actions';
 
-
-
-const Container = styled.div`
-  border: 1px dashed crimson;
-
-  & > * {
-    box-sizing: border-box;
-  }
-`;
 
 const Row  = styled.div`
   display: flex;
@@ -51,79 +39,16 @@ const Cell = styled.div`
   }}
 `;
 
-class PlayingField extends Component {
-  shouldComponentUpdate(nextProps, nextState) {
-    const fieldString = JSON.stringify(this.props.reactris.field);
-    const nextFieldString = JSON.stringify(nextProps.reactris.field);
-
-    return fieldString !== nextFieldString;
-  }
-
-  componentDidMount() {
-    this.props.subscribeToCirclet(this.update);
-  }
-
-  update = (render, epsilon) => {
-    const targetFPS = 60;
-    const { incrementFrameCount, resetFrameCount } = this.props;
-    const { speed, frameCount } = this.props.reactris;
-    const dropThreshold = speed / 1000 * targetFPS;
-
-    if (frameCount >= dropThreshold) {
-      // tetrominoY + 1;
-    }
-
-    if (render && frameCount >= dropThreshold) {
-      this.draw();
-      resetFrameCount(frameCount % dropThreshold);
-    }
-
-    incrementFrameCount();
-  }
-
-  draw = () => {
-    const { field, tetromino, tetrominoX, tetrominoY } = this.props.reactris;
-    const newField = field;
-
-    updateField(newField);
-  }
-
-  getRenderedField = (field) => {
-    const renderedField = field.map((row, rowIndex) => {
-      const cells = row.map((type, cellIndex) => {
-        return <Cell key={`cell-${cellIndex}`} type={type}></Cell>;
-      });
-
-      return <Row key={`row-${rowIndex}`}>{cells}</Row>;
+const PlayingField = ({ field }) => {
+  const renderedField = field.map((row, rowIndex) => {
+    const cells = row.map((type, cellIndex) => {
+      return <Cell key={`cell-${cellIndex}`} type={type}></Cell>;
     });
 
-    return renderedField;
-  }
+    return <Row key={`row-${rowIndex}`}>{cells}</Row>;
+  });
 
-  render() {
-    const renderedField = this.getRenderedField(this.props.reactris.field);
-
-    return (
-      <Container>
-        {renderedField}
-      </Container>
-    );
-  }
+  return renderedField;
 }
 
-const mapStateToProps = (state) => {
-  return {
-    reactris: state.reactris
-  }
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    subscribeToCirclet: (fn) => dispatch(subscribeToCirclet(fn)),
-    incrementFrameCount: () => dispatch(incrementFrameCount()),
-    resetFrameCount: (frameCount) => dispatch(resetFrameCount(frameCount)),
-    updateField: (field) => dispatch(updateField(field))
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(PlayingField);
+export default PlayingField;

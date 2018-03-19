@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 
-import PlayingField from './PlayingField';
+import GameContainer from './GameContainer';
 
 
 
@@ -17,7 +17,7 @@ class App extends Component {
   render() {
     return (
       <Container>
-        <PlayingField />
+        <GameContainer />
       </Container>
     );
   }

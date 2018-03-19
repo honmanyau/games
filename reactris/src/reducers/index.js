@@ -3,7 +3,8 @@ import  {
   SET_FRAME_COUNT,
   UPDATE_PLAYING_FIELD,
   UPDATE_TETROMINO_POSITION,
-  GENERATE_NEW_TETROMINO
+  GENERATE_NEW_TETROMINO,
+  UNSET_TETROMINO
 } from '../actions';
 
 
@@ -54,6 +55,11 @@ export default function reactris(state = initialState, action) {
       return Object.assign({}, deepClonedState, {
         tetrominoX: payload.tetrominoX,
         tetrominoY: payload.tetrominoY
+      });
+
+    case UNSET_TETROMINO:
+      return Object.assign({}, deepClonedState, {
+        tetromino: null
       });
 
     default:

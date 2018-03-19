@@ -1,8 +1,9 @@
 export const INCREMENT_FRAME_COUNT = 'INCREMENT_FRAME_COUNT';
 export const SET_FRAME_COUNT = 'SET_FRAME_COUNT';
 export const UPDATE_PLAYING_FIELD = 'UPDATE_PLAYING_FIELD';
-export const UPDATE_TETROMINO_POSITION = 'UPDATE_TETROMINO_POSITION';
 export const GENERATE_NEW_TETROMINO = 'GENERATE_NEW_TETROMINO';
+export const UPDATE_TETROMINO_POSITION = 'UPDATE_TETROMINO_POSITION';
+export const UNSET_TETROMINO = 'UNSET_TETROMINO';
 
 export function incrementFrameCount(frameCount) {
   return {
@@ -34,5 +35,11 @@ export function updateTetrominoPosition(tetrominoX, tetrominoY) {
   return {
     type: UPDATE_TETROMINO_POSITION,
     payload: { tetrominoX, tetrominoY }
+  }
+}
+
+export function unsetTetromino() {
+  return {
+    type: UNSET_TETROMINO
   }
 }

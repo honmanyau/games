@@ -3,9 +3,16 @@ import { connect } from 'react-redux';
 import { subscribeToCirclet } from 'circlet';
 import styled from 'styled-components';
 
-import { incrementFrameCount, resetFrameCount, updateField } from './actions';
+import {
+  incrementFrameCount,
+  setFrameCount,
+  updateField,
+  generateNewTetromino,
+  updateTetrominoPosition
+} from './actions';
 
 import PlayingField from './PlayingField';
+
 
 
 const Container = styled.div`
@@ -29,18 +36,34 @@ class GameContainer extends Component {
   }
 
   update = (render, epsilon) => {
-    const targetFPS = 60;
-    const { incrementFrameCount, resetFrameCount } = this.props;
-    const { speed, frameCount } = this.props.reactris;
+    const {
+      targetFPS,
+      incrementFrameCount,
+      setFrameCount,
+      generateNewTetromino,
+      updateTetrominoPosition
+    } = this.props;
+    const {
+      speed,
+      frameCount,
+      tetromino,
+      tetrominoX,
+      tetrominoY
+    } = this.props.reactris;
     const dropThreshold = speed / 1000 * targetFPS;
 
-    if (frameCount >= dropThreshold) {
-      // tetrominoY + 1;
+    if (!tetromino) {
+      generateNewTetromino();
+    }
+    else if (frameCount >= dropThreshold) {
+      // Drop tetromino
+      updateTetrominoPosition(tetrominoX, tetrominoY + 1);
+      setFrameCount(0);
     }
 
     if (render && frameCount >= dropThreshold) {
       this.draw();
-      resetFrameCount(frameCount % dropThreshold);
+      setFrameCount(frameCount - 60);
     }
 
     incrementFrameCount();
@@ -49,8 +72,8 @@ class GameContainer extends Component {
   draw = () => {
     const { field, tetromino, tetrominoX, tetrominoY } = this.props.reactris;
     const newField = field;
-
-    updateField(newField);
+    
+    this.props.updateField(newField);
   }
 
   render() {
@@ -64,6 +87,7 @@ class GameContainer extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    targetFPS: state.circlet.targetFPS,
     reactris: state.reactris
   }
 }
@@ -72,8 +96,10 @@ const mapDispatchToProps = (dispatch) => {
   return {
     subscribeToCirclet: (fn) => dispatch(subscribeToCirclet(fn)),
     incrementFrameCount: () => dispatch(incrementFrameCount()),
-    resetFrameCount: (frameCount) => dispatch(resetFrameCount(frameCount)),
-    updateField: (field) => dispatch(updateField(field))
+    setFrameCount: (frameCount) => dispatch(setFrameCount(frameCount)),
+    updateField: (field) => dispatch(updateField(field)),
+    updateTetrominoPosition: (x, y) => dispatch(updateTetrominoPosition(x, y)),
+    generateNewTetromino: () => dispatch(generateNewTetromino())
   }
 }
 

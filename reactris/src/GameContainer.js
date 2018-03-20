@@ -45,7 +45,6 @@ class GameContainer extends Component {
   }
 
   componentDidMount() {
-    // Change listener to keydown?
     window.addEventListener('keypress', this.handleInput, false);
     this.props.subscribeToCirclet(this.update);
   }
@@ -114,14 +113,19 @@ class GameContainer extends Component {
   handleInput = (event) => {
     event.preventDefault();
 
+    const { moveTetromino } = this;
+
     switch(event.key) {
       case 'ArrowDown':
+        moveTetromino(0, 1);
         break;
 
       case 'ArrowLeft':
+        moveTetromino(-1, 0);
         break;
 
       case 'ArrowRight':
+        moveTetromino(1, 0);
         break;
 
       case ' ':

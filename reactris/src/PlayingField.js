@@ -56,7 +56,7 @@ const PlayingField = ({ field, matrix, tetrominoY, tetrominoX }) => {
          * The if statement below is a safety check as well as there to make
          * sure that combinedField[fieldY] is never undefined.
          */
-        if (!rowIsEmpty) {
+        if (!rowIsEmpty && cell) {
           combinedField[fieldY][fieldX] = cell;
         }
       });

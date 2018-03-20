@@ -5,13 +5,15 @@ import  {
   UPDATE_TETROMINO_POSITION,
   GENERATE_NEW_TETROMINO,
   UPDATE_MATRIX,
-  UNSET_TETROMINO
+  UNSET_TETROMINO,
+  SET_COMBINED_FIELD
 } from '../actions';
 import { TETROMINO_MATRICIES } from '../constants';
 
 
 const initialState = {
   field: Array.from(Array(21)).map(() => Array.from(Array(10))),
+  combinedField: Array.from(Array(21)).map(() => Array.from(Array(10))),
   speed: 1000,
   tetromino: null,
   tetrominoX: 3,
@@ -70,6 +72,11 @@ export default function reactris(state = initialState, action) {
       return Object.assign({}, deepClonedState, {
         tetromino: null,
         matrix: null
+      });
+
+    case SET_COMBINED_FIELD:
+      return Object.assign({}, deepClonedState, {
+        combinedField: payload.combinedField
       });
 
     default:

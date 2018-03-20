@@ -5,6 +5,7 @@ export const GENERATE_NEW_TETROMINO = 'GENERATE_NEW_TETROMINO';
 export const UPDATE_TETROMINO_POSITION = 'UPDATE_TETROMINO_POSITION';
 export const UPDATE_MATRIX = 'UPDATE_MATRIX';
 export const UNSET_TETROMINO = 'UNSET_TETROMINO';
+export const SET_COMBINED_FIELD = 'SET_COMBINED_FIELD';
 
 export function incrementFrameCount(frameCount) {
   return {
@@ -49,5 +50,12 @@ export function updateMatrix(matrix) {
 export function unsetTetromino() {
   return {
     type: UNSET_TETROMINO
+  }
+}
+
+export function setCombinedField(field) {
+  return {
+    type: SET_COMBINED_FIELD,
+    payload: { combinedField: field }
   }
 }

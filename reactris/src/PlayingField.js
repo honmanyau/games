@@ -39,31 +39,8 @@ const Cell = styled.div`
   }}
 `;
 
-const PlayingField = ({ field, matrix, tetrominoY, tetrominoX }) => {
-  const combinedField = JSON.parse(JSON.stringify(field));
-
-  if (matrix) {
-    matrix.forEach((row, rowIndex) => {
-      const rowIsEmpty = row.reduce((acc, cell) => acc && !cell, true);
-
-      row.forEach((cell, cellIndex) => {
-        const fieldY = tetrominoY + rowIndex;
-        const fieldX = tetrominoX + cellIndex;
-
-        /*
-         * The code in GameContainer should already have made sure that
-         * out of bounds tetrominoes will never be passed here for rendering.
-         * The if statement below is a safety check as well as there to make
-         * sure that combinedField[fieldY] is never undefined.
-         */
-        if (!rowIsEmpty && cell) {
-          combinedField[fieldY][fieldX] = cell;
-        }
-      });
-    })
-  }
-
-  const renderedField = combinedField.map((row, rowIndex) => {
+const PlayingField = ({ field }) => {
+  const renderedField = field.map((row, rowIndex) => {
     const cells = row.map((type, cellIndex) => {
       return <Cell key={`cell-${cellIndex}`} type={type}></Cell>;
     });

@@ -106,12 +106,7 @@ class GameContainer extends Component {
 
   moveTetromino = (x, y) => {
     const { updateField, unsetTetromino } = this.props;
-    const {
-      field,
-      tetrominoX,
-      tetrominoY,
-      matrix
-    } = this.props.reactris;
+    const { field, tetrominoX, tetrominoY, matrix } = this.props.reactris;
     const nextTetrominoX = tetrominoX + x;
     const nextTetrominoY = tetrominoY + y;
     const drop = y > 0;
@@ -151,12 +146,7 @@ class GameContainer extends Component {
   }
 
   rotateTetromino = () => {
-    const {
-      field,
-      tetrominoX,
-      tetrominoY,
-      matrix
-    } = this.props.reactris;
+    const { field, tetrominoX, tetrominoY, matrix } = this.props.reactris;
     const size = matrix.length - 1;
     const rotatedMatrix = matrix.map((row, rowIndex) => {
       return row.map((cell, cellIndex) => {

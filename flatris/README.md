@@ -12,6 +12,13 @@
 
 ## Installation
 
+```sh
+git clone https://github.com/honmanyau/games games
+cd games/flatris
+npm install
+yarn run start
+```
+
 ## Implementation Details
 
 ### Playing Field

@@ -63,30 +63,37 @@ class GameContainer extends Component {
       if (rowIsEmpty) {
         continue;
       }
-
-      for (let c = 0; c < matrixLength; c++) {
-        const cell = matrix[r][c];
+      else {
         const nextCellY = nextTetrominoY + r;
-        const nextCellX = nextTetrominoX + c;
 
-        outOfBounds = outOfBounds || (
-          cell && (
-            (nextCellX < 0)
-            || (nextCellX >= fieldLengthX)
-            || (nextCellY >= fieldLengthY)
-          )
-        );
-
-        if (outOfBounds) {
+        if (nextCellY >= fieldLengthY) {
+          outOfBounds = true;
           break;
         }
 
-        const nextCell = field[nextCellY][nextCellX];
+        for (let c = 0; c < matrixLength; c++) {
+          const cell = matrix[r][c];
+          const nextCellX = nextTetrominoX + c;
 
-        collided = collided || (cell && nextCell);
+          outOfBounds = outOfBounds || (
+            cell && (
+              (nextCellX < 0)
+              || (nextCellX >= fieldLengthX)
+              || (nextCellY >= fieldLengthY)
+            )
+          );
 
-        if (collided) {
-          break;
+          if (outOfBounds) {
+            break;
+          }
+
+          const nextCell = field[nextCellY][nextCellX];
+
+          collided = collided || (cell && nextCell);
+
+          if (collided) {
+            break;
+          }
         }
       }
     }
@@ -97,6 +104,7 @@ class GameContainer extends Component {
   }
 
   moveTetromino = (x, y) => {
+    const { updateTetrominoPosition, updateField, unsetTetromino } = this.props;
     const { field, tetromino, tetrominoX, tetrominoY } = this.props.reactris;
     const matrix = TETROMINO_MATRICIES[tetromino];
     const nextTetrominoX = tetrominoX + x;
@@ -113,6 +121,23 @@ class GameContainer extends Component {
     }
     else {
       if (drop) {
+        const newField = JSON.parse(JSON.stringify(field));
+        const matrix = TETROMINO_MATRICIES[tetromino];
+        const matrixLength = matrix.length;
+
+        for (let r = 0; r < matrixLength; r++) {
+          for (let c = 0; c < matrixLength; c++) {
+            const cell = matrix[r][c];
+
+            if (cell) {
+              newField[tetrominoY + r][tetrominoX + c] = cell;
+            }
+          }
+        }
+
+        updateField(newField);
+        unsetTetromino();
+
         return 'cemented';
       }
       else {
@@ -170,27 +195,7 @@ class GameContainer extends Component {
       generateNewTetromino();
     }
     else if (frameCount >= dropThreshold) {
-      const moveResult = this.moveTetromino(0, 1);
-
-      if (moveResult === 'cemented') {
-        const newField = JSON.parse(JSON.stringify(field));
-        const matrix = TETROMINO_MATRICIES[tetromino];
-        const matrixLength = matrix.length;
-
-        for (let r = 0; r < matrixLength; r++) {
-          for (let c = 0; c < matrixLength; c++) {
-            const cell = matrix[r][c];
-
-            if (cell) {
-              newField[tetrominoY + r][tetrominoX + c] = cell;
-            }
-          }
-        }
-
-        updateField(newField);
-        unsetTetromino();
-      }
-
+      this.moveTetromino(0, 1);
       setFrameCount(0);
     }
 

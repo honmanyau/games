@@ -49,15 +49,10 @@ class GameContainer extends Component {
     this.props.subscribeToCirclet(this.update);
   }
 
-  moveTetromino = (x, y) => {
-    const { field, tetromino, tetrominoX, tetrominoY } = this.props.reactris;
+  collisionCheck = (field, matrix, nextTetrominoX, nextTetrominoY) => {
     const fieldLengthX = field[0].length;
     const fieldLengthY = field.length;
-    const matrix = TETROMINO_MATRICIES[tetromino];
     const matrixLength = matrix.length;
-    const nextTetrominoX = tetrominoX + x;
-    const nextTetrominoY = tetrominoY + y;
-    const drop = y > 0;
     let collided = false;
     let outOfBounds = false;
 
@@ -94,6 +89,19 @@ class GameContainer extends Component {
     }
 
     const movable = !collided && !outOfBounds;
+
+    return movable;
+  }
+
+  moveTetromino = (x, y) => {
+    const { field, tetromino, tetrominoX, tetrominoY } = this.props.reactris;
+    const matrix = TETROMINO_MATRICIES[tetromino];
+    const nextTetrominoX = tetrominoX + x;
+    const nextTetrominoY = tetrominoY + y;
+    const drop = y > 0;
+    const movable = this.collisionCheck(
+      field, matrix, nextTetrominoX, nextTetrominoY
+    );
 
     if (movable) {
       this.props.updateTetrominoPosition(nextTetrominoX, nextTetrominoY);

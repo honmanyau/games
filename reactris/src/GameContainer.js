@@ -59,13 +59,12 @@ class GameContainer extends Component {
     for (let r = matrixLength - 1; r >= 0 && !collided && !outOfBounds; r--) {
       const row = matrix[r];
       const rowIsEmpty = row.reduce((acc, cell) => acc && !cell, true);
+      const nextCellY = nextTetrominoY + r;
 
       if (rowIsEmpty) {
         continue;
       }
       else {
-        const nextCellY = nextTetrominoY + r;
-
         if (nextCellY >= fieldLengthY) {
           outOfBounds = true;
           break;
@@ -150,25 +149,28 @@ class GameContainer extends Component {
     event.preventDefault();
 
     const { moveTetromino } = this;
+    const { tetromino } = this.props.reactris;
 
-    switch(event.key) {
-      case 'ArrowDown':
-        moveTetromino(0, 1);
-        break;
+    if (tetromino) {
+      switch(event.key) {
+        case 'ArrowDown':
+          moveTetromino(0, 1);
+          break;
 
-      case 'ArrowLeft':
-        moveTetromino(-1, 0);
-        break;
+        case 'ArrowLeft':
+          moveTetromino(-1, 0);
+          break;
 
-      case 'ArrowRight':
-        moveTetromino(1, 0);
-        break;
+        case 'ArrowRight':
+          moveTetromino(1, 0);
+          break;
 
-      case ' ':
-        break;
+        case ' ':
+          break;
 
-      default:
-        break;
+        default:
+          break;
+      }
     }
   }
 

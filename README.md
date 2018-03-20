@@ -8,12 +8,12 @@ try my best to address them as quickly and detailed as possible.
 
 ## Table of Contents
 
-* [Reactris](#reactris)
+* [Flatris](#flatris)
 
-## Reactris
+## Flatris
 
-Reactris is a Tetris clone made with React. The idea is obviously not novel but
-it turns out that even the name is four-year-far from novel (see
-[this repository](https://github.com/jmorrell/reactris), for example) upon a
-quick look on the Internet! In any case, it has to be done at least once so
+Flatris is a Tetris clone made with React. The idea is obviously not novel but
+it turns out that even the original name, Reactris, is four-year-far from novel
+(see [this repository](https://github.com/jmorrell/reactris), for example) upon
+a quick look on the Internet! In any case, it has to be done at least once so
 here it is.

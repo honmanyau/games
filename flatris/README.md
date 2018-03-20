@@ -7,7 +7,7 @@
 * [Installation](#installation)
 * [Implementation Details](#implementation-details)
   * [Playing Field](#playing-field)
-  * [tetrominoes](#tetrominoes)
+  * [Tetrominoes](#tetrominoes)
   * [Game Loop and Rendering](#game-loop-and-rendering)
 
 ## Installation

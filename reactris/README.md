@@ -22,10 +22,10 @@ used as buffering for the next tetromino~~. The data is stored as an array of
 that indicates whether it's empty or occupied by part of one of the seven
 tetrominoes.
 
-### tetrominoes
+### Tetrominoes
 
 Each of the tetrominoes can be represented as a 4x4 matrix, in the case of the
-straight tetromino, or a 3x3 matrix for all other tetrominoes. If the position
+tetromioes I and O, or a 3x3 matrix for all other tetrominoes. If the position
 of each cell in a matrix of size `s` is labelled as `i, j`, where `i` is number
 row index, and `j` the column index, of a tile with respect to the tetromino
 matrix, the new position of a given cell after a clockwise rotation of 90˚,

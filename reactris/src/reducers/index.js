@@ -4,9 +4,10 @@ import  {
   UPDATE_PLAYING_FIELD,
   UPDATE_TETROMINO_POSITION,
   GENERATE_NEW_TETROMINO,
+  UPDATE_MATRIX,
   UNSET_TETROMINO
 } from '../actions';
-
+import { TETROMINO_MATRICIES } from '../constants';
 
 
 const initialState = {
@@ -15,6 +16,7 @@ const initialState = {
   tetromino: null,
   tetrominoX: 3,
   tetrominoY: 0,
+  matrix: null,
   frameCount: 0
 };
 
@@ -44,11 +46,13 @@ export default function reactris(state = initialState, action) {
       const tetrominoes = ['I', 'O', 'T', 'J', 'L', 'S', 'Z'];
       const randomIndex = Math.floor(Math.random() * tetrominoes.length);
       const tetromino = tetrominoes[randomIndex];
+      const matrix = TETROMINO_MATRICIES[tetromino];
 
       return Object.assign({}, deepClonedState, {
         tetromino: tetromino,
         tetrominoX: initialState.tetrominoX,
-        tetrominoY: initialState.tetrominoY
+        tetrominoY: initialState.tetrominoY,
+        matrix: matrix
       });
 
     case UPDATE_TETROMINO_POSITION:
@@ -57,9 +61,15 @@ export default function reactris(state = initialState, action) {
         tetrominoY: payload.tetrominoY
       });
 
+    case UPDATE_MATRIX:
+      return Object.assign({}, deepClonedState, {
+        matrix: payload.matrix
+      });
+
     case UNSET_TETROMINO:
       return Object.assign({}, deepClonedState, {
-        tetromino: null
+        tetromino: null,
+        matrix: null
       });
 
     default:

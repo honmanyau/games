@@ -3,13 +3,13 @@ import { connect } from 'react-redux';
 import { subscribeToCirclet } from 'circlet';
 import styled from 'styled-components';
 
-import { TETROMINO_MATRICIES } from './constants';
 import {
   incrementFrameCount,
   setFrameCount,
   updateField,
   generateNewTetromino,
   updateTetrominoPosition,
+  updateMatrix,
   unsetTetromino
 } from './actions';
 
@@ -32,13 +32,15 @@ class GameContainer extends Component {
       field: this.props.reactris.field,
       tetromino: this.props.reactris.tetromino,
       tetrominoY: this.props.reactris.tetrominoY,
-      tetrominoX: this.props.reactris.tetrominoX
+      tetrominoX: this.props.reactris.tetrominoX,
+      matrix: this.props.reactris.matrix
     });
     const nextStates = JSON.stringify({
       field: nextProps.reactris.field,
       tetromino: nextProps.reactris.tetromino,
       tetrominoY: nextProps.reactris.tetrominoY,
-      tetrominoX: nextProps.reactris.tetrominoX
+      tetrominoX: nextProps.reactris.tetrominoX,
+      matrix: nextProps.reactris.matrix
     });
 
     return states !== nextStates;
@@ -103,9 +105,13 @@ class GameContainer extends Component {
   }
 
   moveTetromino = (x, y) => {
-    const { updateTetrominoPosition, updateField, unsetTetromino } = this.props;
-    const { field, tetromino, tetrominoX, tetrominoY } = this.props.reactris;
-    const matrix = TETROMINO_MATRICIES[tetromino];
+    const { updateField, unsetTetromino } = this.props;
+    const {
+      field,
+      tetrominoX,
+      tetrominoY,
+      matrix
+    } = this.props.reactris;
     const nextTetrominoX = tetrominoX + x;
     const nextTetrominoY = tetrominoY + y;
     const drop = y > 0;
@@ -121,7 +127,6 @@ class GameContainer extends Component {
     else {
       if (drop) {
         const newField = JSON.parse(JSON.stringify(field));
-        const matrix = TETROMINO_MATRICIES[tetromino];
         const matrixLength = matrix.length;
 
         for (let r = 0; r < matrixLength; r++) {
@@ -145,10 +150,37 @@ class GameContainer extends Component {
     }
   }
 
+  rotateTetromino = () => {
+    const {
+      field,
+      tetrominoX,
+      tetrominoY,
+      matrix
+    } = this.props.reactris;
+    const size = matrix.length - 1;
+    const rotatedMatrix = matrix.map((row, rowIndex) => {
+      return row.map((cell, cellIndex) => {
+        return matrix[cellIndex][size - rowIndex]
+      });
+    });
+    const rotatable = this.collisionCheck(
+      field, rotatedMatrix, tetrominoX, tetrominoY
+    );
+
+    if (rotatable) {
+      this.props.updateMatrix(rotatedMatrix);
+
+      return 'rotated';
+    }
+    else {
+      return 'unrotated';
+    }
+  }
+
   handleInput = (event) => {
     event.preventDefault();
 
-    const { moveTetromino } = this;
+    const { moveTetromino, rotateTetromino } = this;
     const { tetromino } = this.props.reactris;
 
     if (tetromino) {
@@ -166,6 +198,7 @@ class GameContainer extends Component {
           break;
 
         case ' ':
+          rotateTetromino();
           break;
 
         default:
@@ -179,17 +212,12 @@ class GameContainer extends Component {
       targetFPS,
       incrementFrameCount,
       setFrameCount,
-      generateNewTetromino,
-      updateField,
-      unsetTetromino
+      generateNewTetromino
     } = this.props;
     const {
-      field,
       speed,
       frameCount,
-      tetromino,
-      tetrominoX,
-      tetrominoY
+      tetromino
     } = this.props.reactris;
     const dropThreshold = speed / 1000 * targetFPS;
 
@@ -212,8 +240,12 @@ class GameContainer extends Component {
   }
 
   render() {
-    const { field, tetromino, tetrominoX, tetrominoY } = this.props.reactris;
-    const matrix = TETROMINO_MATRICIES[tetromino];
+    const {
+      field,
+      tetrominoX,
+      tetrominoY,
+      matrix
+    } = this.props.reactris;
 
     return (
       <Container>
@@ -241,8 +273,9 @@ const mapDispatchToProps = (dispatch) => {
     incrementFrameCount: () => dispatch(incrementFrameCount()),
     setFrameCount: (frameCount) => dispatch(setFrameCount(frameCount)),
     updateField: (field) => dispatch(updateField(field)),
-    updateTetrominoPosition: (x, y) => dispatch(updateTetrominoPosition(x, y)),
     generateNewTetromino: () => dispatch(generateNewTetromino()),
+    updateTetrominoPosition: (x, y) => dispatch(updateTetrominoPosition(x, y)),
+    updateMatrix: (matrix) => dispatch(updateMatrix(matrix)),
     unsetTetromino: () => dispatch(unsetTetromino())
   }
 }

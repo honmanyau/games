@@ -69,10 +69,13 @@ class GameContainer extends Component {
         const nextCellY = nextTetrominoY + r;
         const nextCellX = nextTetrominoX + c;
 
-        outOfBounds = outOfBounds
-          || (nextCellX < 0)
-          || (nextCellX >= fieldLengthX)
-          || (nextCellY >= fieldLengthY);
+        outOfBounds = outOfBounds || (
+          cell && (
+            (nextCellX < 0)
+            || (nextCellX >= fieldLengthX)
+            || (nextCellY >= fieldLengthY)
+          )
+        );
 
         if (outOfBounds) {
           break;

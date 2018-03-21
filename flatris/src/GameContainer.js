@@ -229,8 +229,9 @@ class GameContainer extends Component {
     event.preventDefault();
 
     const { moveTetromino, rotateTetromino } = this;
-    const { tetromino } = this.props.flatris;
-    console.log(event.key);
+    const { setGameStatus } = this.props;
+    const { tetromino, game } = this.props.flatris;
+
     if (tetromino) {
       switch(event.key) {
         case 'ArrowDown':
@@ -252,6 +253,9 @@ class GameContainer extends Component {
 
         case 'p':
         case 'z':
+          const status = (game === 'paused') ? ' ' : 'paused';
+          
+          setGameStatus(status);
           break;
 
         default:

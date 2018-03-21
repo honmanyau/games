@@ -48,6 +48,8 @@ const PlayingField = ({ field }) => {
     return <Row key={`row-${rowIndex}`}>{cells}</Row>;
   });
 
+  renderedField.shift();
+
   return renderedField;
 }
 

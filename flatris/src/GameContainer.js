@@ -19,7 +19,6 @@ import PlayingField from './PlayingField';
 
 
 const Container = styled.div`
-  border: 1px dashed crimson;
   background: black;
 
   & > * {
@@ -247,8 +246,7 @@ class GameContainer extends Component {
 
     if (!tetromino) {
       const rowsCleared = this.destroyRows();
-      // this.checkRows(); use a flag to see if field is updated before
-      // generating a new tetromino
+
       if (!rowsCleared && game !== 'over') {
         generateNewTetromino();
       }

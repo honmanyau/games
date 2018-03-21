@@ -5,6 +5,9 @@ import styled from 'styled-components';
 
 
 const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   width: 150px;
   margin-left: 5px;
   line-height: 1.6;
@@ -19,12 +22,12 @@ const Lines = styled.div`
 
 const Status = styled.div`
   text-align: center;
-  padding: 80px 0;
+  padding: 60px 0;
 `;
 
-const Control = styled.code`
-  padding: 0 4px;
+const Key = styled.code`
   flex-basis: content;
+  padding: 0 4px;
   border: 1px solid black;
   border-radius: 2px;
   font-size: 1.2em;
@@ -57,11 +60,38 @@ class UIContainer extends Component {
         </Lines>
 
         <Status>{status}</Status>
-        
-        <div><Control>↓</Control> down</div>
-        <div><Control>←</Control> left</div>
-        <div><Control>→</Control> right</div>
-        <div><Control>spacebar</Control> rotate</div>
+
+        <div>
+          <div>
+            <Key>↓</Key>
+            <br />
+            Down
+          </div>
+
+          <div>
+            <Key>←</Key>
+            <br />
+            Left
+          </div>
+
+          <div>
+            <Key>→</Key>
+            <br />
+            Right
+          </div>
+
+          <div>
+            <Key>Spacebar</Key> <Key>C</Key>
+            <br />
+            Rotate
+          </div>
+
+          <div>
+            <Key>P</Key> <Key>Z</Key>
+            <br />
+            Pause
+          </div>
+        </div>
       </Container>
     );
   }

@@ -29,8 +29,8 @@ const Container = styled.div`
 
 class GameContainer extends Component {
   shouldComponentUpdate(nextProps, nextState) {
-    const combinedField = JSON.stringify(this.props.reactris.combinedField);
-    const nextcombinedField = JSON.stringify(nextProps.reactris.combinedField);
+    const combinedField = JSON.stringify(this.props.flatris.combinedField);
+    const nextcombinedField = JSON.stringify(nextProps.flatris.combinedField);
 
     return combinedField !== nextcombinedField;
   }
@@ -95,7 +95,7 @@ class GameContainer extends Component {
 
   moveTetromino = (x, y) => {
     const { updateField, unsetTetromino } = this.props;
-    const { field, tetrominoX, tetrominoY, matrix } = this.props.reactris;
+    const { field, tetrominoX, tetrominoY, matrix } = this.props.flatris;
     const nextTetrominoX = tetrominoX + x;
     const nextTetrominoY = tetrominoY + y;
     const drop = y > 0;
@@ -135,7 +135,7 @@ class GameContainer extends Component {
   }
 
   rotateTetromino = () => {
-    const { field, tetrominoX, tetrominoY, matrix } = this.props.reactris;
+    const { field, tetrominoX, tetrominoY, matrix } = this.props.flatris;
     const size = matrix.length - 1;
     const rotatedMatrix = matrix.map((row, rowIndex) => {
       return row.map((cell, cellIndex) => {
@@ -157,7 +157,7 @@ class GameContainer extends Component {
   }
 
   destroyRows = () => {
-    const { combinedField } = this.props.reactris;
+    const { combinedField } = this.props.flatris;
     const len = combinedField.length;
     const field = JSON.parse(JSON.stringify(combinedField));
     let rowsCleared = 0;
@@ -187,7 +187,7 @@ class GameContainer extends Component {
     event.preventDefault();
 
     const { moveTetromino, rotateTetromino } = this;
-    const { tetromino } = this.props.reactris;
+    const { tetromino } = this.props.flatris;
 
     if (tetromino) {
       switch(event.key) {
@@ -214,7 +214,7 @@ class GameContainer extends Component {
   }
 
   getCombinedField = () => {
-    const { field, tetrominoX, tetrominoY, matrix } = this.props.reactris;
+    const { field, tetrominoX, tetrominoY, matrix } = this.props.flatris;
     const combinedField = JSON.parse(JSON.stringify(field));
 
     if (matrix) {
@@ -242,7 +242,7 @@ class GameContainer extends Component {
       setFrameCount,
       generateNewTetromino
     } = this.props;
-    const { speed, frameCount, tetromino } = this.props.reactris;
+    const { speed, frameCount, tetromino } = this.props.flatris;
     const dropThreshold = speed / 1000 * targetFPS;
 
     if (!tetromino) {
@@ -268,7 +268,7 @@ class GameContainer extends Component {
   }
 
   render() {
-    const { combinedField } = this.props.reactris;
+    const { combinedField } = this.props.flatris;
 
     return (
       <Container>
@@ -281,7 +281,7 @@ class GameContainer extends Component {
 const mapStateToProps = (state) => {
   return {
     targetFPS: state.circlet.targetFPS,
-    reactris: state.reactris
+    flatris: state.flatris
   }
 }
 

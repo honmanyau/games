@@ -1,8 +1,10 @@
 import { createStore, combineReducers } from 'redux';
 import { circletReducer as circlet } from 'circlet';
-import reactris from './reducers';
+import flatris from './reducers';
 
-const reducer = combineReducers({ circlet, reactris });
+
+
+const reducer = combineReducers({ circlet, flatris });
 const store = createStore(reducer);
 
 export default store;

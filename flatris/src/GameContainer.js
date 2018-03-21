@@ -242,14 +242,14 @@ class GameContainer extends Component {
       setFrameCount,
       generateNewTetromino
     } = this.props;
-    const { speed, frameCount, tetromino } = this.props.flatris;
+    const { speed, frameCount, tetromino, game } = this.props.flatris;
     const dropThreshold = speed / 1000 * targetFPS;
 
     if (!tetromino) {
       const rowsCleared = this.destroyRows();
       // this.checkRows(); use a flag to see if field is updated before
       // generating a new tetromino
-      if (!rowsCleared) {
+      if (!rowsCleared && game !== 'over') {
         generateNewTetromino();
       }
     }

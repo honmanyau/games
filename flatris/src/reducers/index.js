@@ -19,7 +19,8 @@ const initialState = {
   tetrominoX: 3,
   tetrominoY: 0,
   matrix: null,
-  frameCount: 0
+  frameCount: 0,
+  game: ''
 };
 
 export default function reactris(state = initialState, action) {
@@ -45,16 +46,37 @@ export default function reactris(state = initialState, action) {
       });
 
     case GENERATE_NEW_TETROMINO:
+      const { field, game } = state;
       const tetrominoes = ['I', 'O', 'T', 'J', 'L', 'S', 'Z'];
       const randomIndex = Math.floor(Math.random() * tetrominoes.length);
       const tetromino = tetrominoes[randomIndex];
       const matrix = TETROMINO_MATRICIES[tetromino];
+      const tetrominoX = initialState.tetrominoX;
+      const tetrominoY = initialState.tetrominoY;
+      const size = matrix.length - 1;
+      let overlapped = false;
+
+      for (let r = 0; r < size && !overlapped; r++) {
+        const fieldY = tetrominoY + r;
+
+        for (let c = 0; c < size; c++) {
+          const fieldX = tetrominoX + c;
+          const matrixCell = matrix[r][c];
+          const fieldCell = field[fieldY][fieldX];
+
+          if (matrixCell && fieldCell) {
+            overlapped = true;
+            break;
+          }
+        }
+      }
 
       return Object.assign({}, deepClonedState, {
         tetromino: tetromino,
-        tetrominoX: initialState.tetrominoX,
-        tetrominoY: initialState.tetrominoY,
-        matrix: matrix
+        tetrominoX: tetrominoX,
+        tetrominoY: tetrominoY,
+        matrix: matrix,
+        game: overlapped ? 'over' : game
       });
 
     case UPDATE_TETROMINO_POSITION:

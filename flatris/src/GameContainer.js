@@ -7,12 +7,16 @@ import {
   incrementFrameCount,
   setFrameCount,
   updateField,
-  generateNewTetromino,
   updateTetrominoPosition,
   updateMatrix,
+  setTetromino,
   unsetTetromino,
-  setCombinedField
+  setCombinedField,
+  updateLines,
+  setGameStatus
 } from './actions';
+
+import { TETROMINO_MATRICIES } from './constants';
 
 import PlayingField from './PlayingField';
 
@@ -37,6 +41,42 @@ class GameContainer extends Component {
   componentDidMount() {
     window.addEventListener('keypress', this.handleInput, false);
     this.props.subscribeToCirclet(this.update);
+  }
+
+  newTetromino = () => {
+    const { setTetromino, setGameStatus } = this.props;
+    const { field, tetrominoX, tetrominoY } = this.props.flatris;
+    const tetrominoes = ['I', 'O', 'T', 'J', 'L', 'S', 'Z'];
+    const randomIndex = Math.floor(Math.random() * tetrominoes.length);
+    const tetromino = tetrominoes[randomIndex];
+    const matrix = TETROMINO_MATRICIES[tetromino];
+    const size = matrix.length - 1;
+    let overlapped = false;
+
+    for (let r = 0; r < size && !overlapped; r++) {
+      const fieldY = tetrominoY + r;
+
+      for (let c = 0; c < size; c++) {
+        const fieldX = tetrominoX + c;
+        const matrixCell = matrix[r][c];
+        const fieldCell = field[fieldY][fieldX];
+
+        if (matrixCell && fieldCell) {
+          overlapped = true;
+          break;
+        }
+      }
+    }
+
+    if (overlapped) {
+      setGameStatus('over');
+      // reset tetrominoposition
+    }
+    else {
+      setTetromino(tetromino, matrix);
+    }
+
+    updateTetrominoPosition(tetrominoX, tetrominoY);
   }
 
   collisionCheck = (field, matrix, nextTetrominoX, nextTetrominoY) => {
@@ -156,6 +196,7 @@ class GameContainer extends Component {
   }
 
   destroyRows = () => {
+    const { updateField, updateLines } = this.props;
     const { combinedField } = this.props.flatris;
     const len = combinedField.length;
     const field = JSON.parse(JSON.stringify(combinedField));
@@ -175,9 +216,11 @@ class GameContainer extends Component {
       for (let i = 0; i < rowsCleared; i++) {
         field.unshift(Array.from(Array(10)));
       }
+
+      updateLines(rowsCleared);
     }
 
-    this.props.updateField(field);
+    updateField(field);
 
     return rowsCleared;
   }
@@ -187,7 +230,7 @@ class GameContainer extends Component {
 
     const { moveTetromino, rotateTetromino } = this;
     const { tetromino } = this.props.flatris;
-
+    console.log(event.key);
     if (tetromino) {
       switch(event.key) {
         case 'ArrowDown':
@@ -202,8 +245,13 @@ class GameContainer extends Component {
           moveTetromino(1, 0);
           break;
 
+        case 'c':
         case ' ':
           rotateTetromino();
+          break;
+
+        case 'p':
+        case 'z':
           break;
 
         default:
@@ -235,25 +283,30 @@ class GameContainer extends Component {
   }
 
   update = (render, epsilon) => {
-    const {
-      targetFPS,
-      incrementFrameCount,
-      setFrameCount,
-      generateNewTetromino
-    } = this.props;
-    const { speed, frameCount, tetromino, game } = this.props.flatris;
-    const dropThreshold = speed / 1000 * targetFPS;
+    const { game } = this.props.flatris;
 
-    if (!tetromino) {
-      const rowsCleared = this.destroyRows();
+    if (game !== 'paused') {
+      const {
+        targetFPS,
+        incrementFrameCount,
+        setFrameCount
+      } = this.props;
+      const { speed, frameCount, tetromino, game } = this.props.flatris;
+      const dropThreshold = speed / 1000 * targetFPS;
 
-      if (!rowsCleared && game !== 'over') {
-        generateNewTetromino();
+      if (!tetromino) {
+        const rowsCleared = this.destroyRows();
+
+        if (!rowsCleared && game !== 'over') {
+          this.newTetromino();
+        }
       }
-    }
-    else if (frameCount >= dropThreshold) {
-      this.moveTetromino(0, 1);
-      setFrameCount(frameCount - dropThreshold);
+      else if (frameCount >= dropThreshold) {
+        this.moveTetromino(0, 1);
+        setFrameCount(frameCount - dropThreshold);
+      }
+
+      incrementFrameCount();
     }
 
     if (render) {
@@ -261,8 +314,6 @@ class GameContainer extends Component {
 
       this.props.setCombinedField(combinedField);
     }
-
-    incrementFrameCount();
   }
 
   render() {
@@ -289,11 +340,13 @@ const mapDispatchToProps = (dispatch) => {
     incrementFrameCount: () => dispatch(incrementFrameCount()),
     setFrameCount: (frameCount) => dispatch(setFrameCount(frameCount)),
     updateField: (field) => dispatch(updateField(field)),
-    generateNewTetromino: () => dispatch(generateNewTetromino()),
     updateTetrominoPosition: (x, y) => dispatch(updateTetrominoPosition(x, y)),
     updateMatrix: (matrix) => dispatch(updateMatrix(matrix)),
+    setTetromino: (type, matrix) => dispatch(setTetromino(type, matrix)),
     unsetTetromino: () => dispatch(unsetTetromino()),
-    setCombinedField: (field) => dispatch(setCombinedField(field))
+    setCombinedField: (field) => dispatch(setCombinedField(field)),
+    updateLines: (lines) => dispatch(updateLines(lines)),
+    setGameStatus: (status) => dispatch(setGameStatus(status))
   }
 }
 

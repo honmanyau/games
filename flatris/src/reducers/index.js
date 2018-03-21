@@ -3,12 +3,14 @@ import  {
   SET_FRAME_COUNT,
   UPDATE_PLAYING_FIELD,
   UPDATE_TETROMINO_POSITION,
-  GENERATE_NEW_TETROMINO,
   UPDATE_MATRIX,
+  SET_TETROMINO,
   UNSET_TETROMINO,
-  SET_COMBINED_FIELD
+  SET_COMBINED_FIELD,
+  UPDATE_LINES,
+  SET_GAME_STATUS
 } from '../actions';
-import { TETROMINO_MATRICIES } from '../constants';
+
 
 
 const initialState = {
@@ -20,7 +22,8 @@ const initialState = {
   tetrominoY: 0,
   matrix: null,
   frameCount: 0,
-  game: ''
+  game: '',
+  lines: 0
 };
 
 export default function reactris(state = initialState, action) {
@@ -45,40 +48,6 @@ export default function reactris(state = initialState, action) {
         field: JSON.parse(JSON.stringify(payload.field))
       });
 
-    case GENERATE_NEW_TETROMINO:
-      const { field, game } = state;
-      const tetrominoes = ['I', 'O', 'T', 'J', 'L', 'S', 'Z'];
-      const randomIndex = Math.floor(Math.random() * tetrominoes.length);
-      const tetromino = tetrominoes[randomIndex];
-      const matrix = TETROMINO_MATRICIES[tetromino];
-      const tetrominoX = initialState.tetrominoX;
-      const tetrominoY = initialState.tetrominoY;
-      const size = matrix.length - 1;
-      let overlapped = false;
-
-      for (let r = 0; r < size && !overlapped; r++) {
-        const fieldY = tetrominoY + r;
-
-        for (let c = 0; c < size; c++) {
-          const fieldX = tetrominoX + c;
-          const matrixCell = matrix[r][c];
-          const fieldCell = field[fieldY][fieldX];
-
-          if (matrixCell && fieldCell) {
-            overlapped = true;
-            break;
-          }
-        }
-      }
-
-      return Object.assign({}, deepClonedState, {
-        tetromino: tetromino,
-        tetrominoX: tetrominoX,
-        tetrominoY: tetrominoY,
-        matrix: matrix,
-        game: overlapped ? 'over' : game
-      });
-
     case UPDATE_TETROMINO_POSITION:
       return Object.assign({}, deepClonedState, {
         tetrominoX: payload.tetrominoX,
@@ -90,15 +59,33 @@ export default function reactris(state = initialState, action) {
         matrix: payload.matrix
       });
 
+    case SET_TETROMINO:
+      return Object.assign({}, deepClonedState, {
+        tetromino: payload.tetromino,
+        matrix: payload.matrix
+      });
+
     case UNSET_TETROMINO:
       return Object.assign({}, deepClonedState, {
         tetromino: null,
-        matrix: null
+        matrix: null,
+        tetrominoX: initialState.tetrominoX,
+        tetrominoY: initialState.tetrominoY
       });
 
     case SET_COMBINED_FIELD:
       return Object.assign({}, deepClonedState, {
         combinedField: payload.combinedField
+      });
+
+    case UPDATE_LINES:
+      return Object.assign({}, deepClonedState, {
+        lines: state.lines + payload.lines
+      });
+
+    case SET_GAME_STATUS:
+      return Object.assign({}, deepClonedState, {
+        game: payload.game
       });
 
     default:

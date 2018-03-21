@@ -156,6 +156,33 @@ class GameContainer extends Component {
     }
   }
 
+  destroyRows = () => {
+    const { combinedField } = this.props.reactris;
+    const len = combinedField.length;
+    const field = JSON.parse(JSON.stringify(combinedField));
+    let rowsCleared = 0;
+
+    for (let rowIndex = len - 1; rowIndex >= 0; rowIndex--) {
+      const row = field[rowIndex];
+      const rowFilled = row.reduce((acc, cell) => acc && cell, true);
+
+      if (rowFilled) {
+        field.splice(rowIndex, 1);
+        rowsCleared++;
+      }
+    }
+
+    if (rowsCleared) {
+      for (let i = 0; i < rowsCleared; i++) {
+        field.unshift(Array.from(Array(10)));
+      }
+    }
+
+    this.props.updateField(field);
+
+    return rowsCleared;
+  }
+
   handleInput = (event) => {
     event.preventDefault();
 
@@ -219,7 +246,12 @@ class GameContainer extends Component {
     const dropThreshold = speed / 1000 * targetFPS;
 
     if (!tetromino) {
-      generateNewTetromino();
+      const rowsCleared = this.destroyRows();
+      // this.checkRows(); use a flag to see if field is updated before
+      // generating a new tetromino
+      if (!rowsCleared) {
+        generateNewTetromino();
+      }
     }
     else if (frameCount >= dropThreshold) {
       this.moveTetromino(0, 1);

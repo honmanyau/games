@@ -32,7 +32,7 @@ const Control = styled.code`
 
 class UIContainer extends Component {
   render() {
-    const { game } = this.props;
+    const { game, lines } = this.props;
     let status = ' ';
 
     switch(game) {
@@ -53,9 +53,11 @@ class UIContainer extends Component {
       <Container>
         <Lines>
           <div>Lines Cleared</div>
-          <div>{0}</div>
+          <div>{lines}</div>
         </Lines>
+
         <Status>{status}</Status>
+        
         <div><Control>↓</Control> down</div>
         <div><Control>←</Control> left</div>
         <div><Control>→</Control> right</div>
@@ -67,7 +69,8 @@ class UIContainer extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    game: state.flatris.game
+    game: state.flatris.game,
+    lines: state.flatris.lines
   }
 }
 

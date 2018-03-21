@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import styled from 'styled-components';
 
 import GameContainer from './GameContainer';
@@ -25,8 +24,6 @@ const GameArea = styled.div`
 
 class App extends Component {
   render() {
-    const { game } = this.props;
-
     return (
       <Container>
         <GameArea>
@@ -38,10 +35,4 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    game: state.flatris.game
-  }
-}
-
-export default connect(mapStateToProps, null)(App);
+export default App;

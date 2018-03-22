@@ -129,10 +129,6 @@ class GameContainer extends Component {
 
     const movable = !collided && !outOfBounds;
 
-    if (!movable) {
-      console.log('NOTMOV', JSON.stringify(field), JSON.stringify(matrix), nextTetrominoX, nextTetrominoY);
-    }
-
     return movable;
   }
 
@@ -166,10 +162,9 @@ class GameContainer extends Component {
           }
         }
 
-        console.log('NEWFIELD', JSON.stringify(newField));
         updateField(newField);
         unsetTetromino();
-        console.log('NEWFIELD', JSON.stringify(newField));
+
         return 'cemented';
       }
       else {
@@ -291,8 +286,8 @@ class GameContainer extends Component {
 
   update = (render, epsilon) => {
     const { game } = this.props.flatris;
-    //  double check game here
-    if (game !== 'paused') {
+
+    if (game !== 'paused' && game !== 'over') {
       const {
         targetFPS,
         incrementFrameCount,
@@ -304,7 +299,7 @@ class GameContainer extends Component {
       if (!tetromino) {
         const rowsCleared = this.destroyRows();
 
-        if (!rowsCleared && game !== 'over') {
+        if (!rowsCleared) {
           this.newTetromino();
         }
       }

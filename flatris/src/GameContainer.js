@@ -129,6 +129,10 @@ class GameContainer extends Component {
 
     const movable = !collided && !outOfBounds;
 
+    if (!movable) {
+      console.log('NOTMOV', JSON.stringify(field), JSON.stringify(matrix), nextTetrominoX, nextTetrominoY);
+    }
+
     return movable;
   }
 
@@ -162,9 +166,10 @@ class GameContainer extends Component {
           }
         }
 
+        console.log('NEWFIELD', JSON.stringify(newField));
         updateField(newField);
         unsetTetromino();
-
+        console.log('NEWFIELD', JSON.stringify(newField));
         return 'cemented';
       }
       else {
@@ -197,9 +202,8 @@ class GameContainer extends Component {
 
   destroyRows = () => {
     const { updateField, updateLines } = this.props;
-    const { combinedField } = this.props.flatris;
-    const len = combinedField.length;
-    const field = JSON.parse(JSON.stringify(combinedField));
+    const field = JSON.parse(JSON.stringify(this.props.flatris.field));
+    const len = field.length;
     let rowsCleared = 0;
 
     for (let rowIndex = len - 1; rowIndex >= 0; rowIndex--) {
@@ -218,9 +222,8 @@ class GameContainer extends Component {
       }
 
       updateLines(rowsCleared);
+      updateField(field);
     }
-
-    updateField(field);
 
     return rowsCleared;
   }
@@ -254,7 +257,7 @@ class GameContainer extends Component {
         case 'p':
         case 'z':
           const status = (game === 'paused') ? ' ' : 'paused';
-          
+
           setGameStatus(status);
           break;
 
@@ -288,7 +291,7 @@ class GameContainer extends Component {
 
   update = (render, epsilon) => {
     const { game } = this.props.flatris;
-
+    //  double check game here
     if (game !== 'paused') {
       const {
         targetFPS,

@@ -293,7 +293,7 @@ class GameContainer extends Component {
         incrementFrameCount,
         setFrameCount
       } = this.props;
-      const { speed, frameCount, tetromino, game } = this.props.flatris;
+      const { speed, frameCount, tetromino } = this.props.flatris;
       const dropThreshold = speed / 1000 * targetFPS;
 
       if (!tetromino) {

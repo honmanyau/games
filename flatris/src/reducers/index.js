@@ -8,7 +8,8 @@ import  {
   UNSET_TETROMINO,
   SET_COMBINED_FIELD,
   UPDATE_LINES,
-  SET_GAME_STATUS
+  SET_GAME_STATUS,
+  RESTART
 } from '../actions';
 
 
@@ -87,6 +88,9 @@ export default function reactris(state = initialState, action) {
       return Object.assign({}, deepClonedState, {
         game: payload.game
       });
+
+    case RESTART:
+      return JSON.parse(JSON.stringify(initialState));
 
     default:
       return state;

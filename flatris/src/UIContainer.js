@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 
+import { restart } from './actions';
+
 
 
 const Container = styled.div`
@@ -33,10 +35,23 @@ const Key = styled.code`
   font-size: 1.2em;
 `;
 
+const Restart = styled.strong`
+  font-weight: bold;
+  font-size: 14px;
+  text-decoration: underline;
+  transition: color 1s;
+
+  &:hover {
+    color: #1CE;
+    cursor: pointer;
+  }
+`;
+
 class UIContainer extends Component {
   render() {
     const { game, lines } = this.props;
     let status = ' ';
+    let restart = null;
 
     switch(game) {
       case 'paused':
@@ -45,6 +60,7 @@ class UIContainer extends Component {
 
       case 'over':
         status = '--GAME OVER--';
+        restart = <Restart onClick={this.props.restart}>Restart</Restart>
         break;
 
       default:
@@ -59,7 +75,10 @@ class UIContainer extends Component {
           <div>{lines}</div>
         </Lines>
 
-        <Status>{status}</Status>
+        <Status>
+          <div>{status}</div>
+          <div>{restart}</div>
+        </Status>
 
         <div>
           <div>
@@ -104,4 +123,10 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps, null)(UIContainer);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    restart: () => dispatch(restart())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(UIContainer);

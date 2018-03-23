@@ -8,6 +8,7 @@ export const UNSET_TETROMINO = 'UNSET_TETROMINO';
 export const SET_COMBINED_FIELD = 'SET_COMBINED_FIELD';
 export const UPDATE_LINES = 'UPDATE_LINES';
 export const SET_GAME_STATUS = 'SET_GAME_STATUS';
+export const RESTART = 'RESTART';
 
 export function incrementFrameCount(frameCount) {
   return {
@@ -74,5 +75,11 @@ export function setGameStatus(game) {
   return {
     type: SET_GAME_STATUS,
     payload: { game }
+  }
+}
+
+export function restart() {
+  return {
+    type: RESTART
   }
 }

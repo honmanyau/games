@@ -2,13 +2,20 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { subscribeToCirclet } from 'circlet';
 
-import { initialise, updateField } from './actions';
+import { initialise, updateField, updateRenderedField } from './actions';
 
 import PlayingField from './PlayingField';
 
 
 
 class GameContainer extends React.Component {
+  shouldComponentUpdate(nextProps, nextState) {
+    const renderedField = JSON.stringify(this.props.znva.renderedField);
+    const nextRenderedField = JSON.stringify(nextProps.znva.renderedField);
+
+    return nextRenderedField !== renderedField;
+  }
+
   componentDidMount() {
     window.addEventListener('keypress', this.handleInput);
     this.init();
@@ -32,7 +39,7 @@ class GameContainer extends React.Component {
 
   handleInput = (event) => {
     event.preventDefault();
-    console.log(event.key);
+
     let x = 0;
     let y = 0;
 
@@ -163,8 +170,12 @@ class GameContainer extends React.Component {
     updateField(nextField);
   }
 
-  update = () => {
+  update = (render, epsilon) => {
+    if (render) {
+      const { field } = this.props.znva;
 
+      this.props.updateRenderedField(field);
+    }
   }
 
   render() {
@@ -188,7 +199,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     subscribeToCirclet: (fn) => dispatch(subscribeToCirclet(fn)),
     initialise: (field) => dispatch(initialise(field)),
-    updateField: (field) => dispatch(updateField(field))
+    updateField: (field) => dispatch(updateField(field)),
+    updateRenderedField: (field) => dispatch(updateRenderedField(field))
   }
 }
 

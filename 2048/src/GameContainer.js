@@ -29,9 +29,11 @@ class GameContainer extends React.Component {
   }
 
   render() {
+    const { field } = this.props.znva;
+    
     return (
       <div>
-        <PlayingField field={this.props.znva.field} />
+        <PlayingField field={field} />
       </div>
     );
   }

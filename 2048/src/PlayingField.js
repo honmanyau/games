@@ -22,14 +22,16 @@ const Cell = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px dashed black;
   border-radius: 4px;
+  font-size: 32px;
+  color: white;
+  background: ${props => props.val ? '#ff8b94' : '#CCC'};
 `;
 
 const playingField = ({ field }) => {
   const flattenedField = field.join(',').split(',');
   const cells = flattenedField.map((val, index) => {
-    return <Cell key={index}>{val}</Cell>;
+    return <Cell key={index} val={val}>{val}</Cell>;
   });
 
   return(

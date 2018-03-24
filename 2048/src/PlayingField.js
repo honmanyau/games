@@ -18,7 +18,7 @@ const Container = styled.div`
   }
 `;
 
-const Cell = styled.div`
+const Tile = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -31,7 +31,7 @@ const Cell = styled.div`
 const playingField = ({ field }) => {
   const flattenedField = field.join(',').split(',');
   const cells = flattenedField.map((val, index) => {
-    return <Cell key={index} val={val}>{val}</Cell>;
+    return <Tile key={index} val={val}>{val}</Tile>;
   });
 
   return(

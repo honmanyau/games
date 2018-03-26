@@ -2,11 +2,23 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { subscribeToCirclet } from 'circlet';
 
-import { initialise, updateField, updateRenderedField } from './actions';
+import {
+  initialise,
+  updateField,
+  updateRenderedField,
+  updateScore
+} from './actions';
 
 import PlayingField from './PlayingField';
 
 
+// Scoring
+// Gameover
+// Restart
+// Colour gradient
+// Variable font-size
+// Swipe
+// Animation
 
 class GameContainer extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
@@ -81,7 +93,6 @@ class GameContainer extends React.Component {
       const len = nextField.length;
       const emptyTiles = nextField.join(',').split(',').filter((tile) => !tile);
       const fieldIsFull = emptyTiles.length === 0;
-      let added = false;
 
       if (fieldIsFull) {
         return 'full';
@@ -121,6 +132,8 @@ class GameContainer extends React.Component {
         if (direction === 'anticlockwise') {
           return field[size - tileIndex][rowIndex];
         }
+
+        return row;
       });
     });
 
@@ -129,10 +142,11 @@ class GameContainer extends React.Component {
 
   moveTiles = (x, y) => {
     const { deepClone, rotateField } = this;
-    const { updateField } = this.props;
+    const { updateField, updateScore } = this.props;
     const len = this.props.znva.field.length;
     let field = deepClone(this.props.znva.field);
     let nextField;
+    let score = 0;
 
     if (!x && y) {
       field = rotateField(field, 'clockwise');
@@ -150,6 +164,7 @@ class GameContainer extends React.Component {
         const nextTile = tiles[i + 1];
 
         if (tile === nextTile) {
+          score += tile * 2;
           tiles[i] = tile * 2;
           tiles[i + 1] = null;
         }
@@ -165,6 +180,10 @@ class GameContainer extends React.Component {
 
     if (!x && y) {
       nextField = rotateField(nextField, 'anticlockwise');
+    }
+
+    if (score) {
+      updateScore(score);
     }
 
     updateField(nextField);
@@ -200,7 +219,8 @@ const mapDispatchToProps = (dispatch) => {
     subscribeToCirclet: (fn) => dispatch(subscribeToCirclet(fn)),
     initialise: (field) => dispatch(initialise(field)),
     updateField: (field) => dispatch(updateField(field)),
-    updateRenderedField: (field) => dispatch(updateRenderedField(field))
+    updateRenderedField: (field) => dispatch(updateRenderedField(field)),
+    updateScore: (score) => dispatch(updateScore(score))
   }
 }
 

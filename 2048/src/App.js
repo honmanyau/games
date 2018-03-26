@@ -9,18 +9,22 @@ import UIContainer from './UIContainer';
 
 const Container = styled.div`
   height: 100vh;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: 1fr 50px 1fr 1fr;
   justify-content: center;
-  align-items: center;
+`;
+
+const GridItem = styled.div`
+  grid-row: ${props => props.row};
+  grid-column: ${props => props.column};
 `;
 
 class App extends React.Component {
   render() {
     return (
       <Container>
-        <UIContainer />
-        <GameContainer />
+        <GridItem row="2"><UIContainer /></GridItem>
+        <GridItem row="3"><GameContainer /></GridItem>
       </Container>
     );
   }

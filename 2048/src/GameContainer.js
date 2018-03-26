@@ -6,19 +6,13 @@ import {
   initialise,
   updateField,
   updateRenderedField,
-  updateScore
+  updateScore,
+  setGameState
 } from './actions';
 
 import PlayingField from './PlayingField';
 
 
-// Scoring
-// Gameover
-// Restart
-// Colour gradient
-// Variable font-size
-// Swipe
-// Animation
 
 class GameContainer extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
@@ -30,23 +24,12 @@ class GameContainer extends React.Component {
 
   componentDidMount() {
     window.addEventListener('keypress', this.handleInput);
-    this.init();
+    this.addTile();
     this.props.subscribeToCirclet(this.update);
   }
 
   deepClone = (obj) => {
     return JSON.parse(JSON.stringify(obj));
-  }
-
-  init = () => {
-    const field = Array.from(Array(4)).map(() => Array.from(Array(4)));
-    const len = field.length;
-    const fieldX = Math.floor(Math.random() * len);
-    const fieldY = Math.floor(Math.random() * len);
-
-    field[fieldY][fieldX] = 2;
-
-    this.props.initialise(field);
   }
 
   handleInput = (event) => {
@@ -80,6 +63,8 @@ class GameContainer extends React.Component {
       this.moveTiles(x, y);
       this.addTile();
     }
+
+    this.updateGameState();
   }
 
   addTile = () => {
@@ -140,6 +125,25 @@ class GameContainer extends React.Component {
     return rotateField;
   }
 
+  getPossibleMoves = () => {
+    const { field: unrotatedField } = this.props.znva;
+    const rotatedField = this.rotateField(unrotatedField, 'clockwise');
+    const len = unrotatedField.length;
+    let possibleMoves = 0;
+
+    [unrotatedField, rotatedField].forEach((field) => {
+      field.forEach((row, rowIndex) => {
+        const filteredRow = row.filter((tile, tileIndex) => {
+          return tile !== row[tileIndex + 1]
+        });
+
+        possibleMoves += len - filteredRow.length;
+      });
+    });
+
+    return possibleMoves;
+  }
+
   moveTiles = (x, y) => {
     const { deepClone, rotateField } = this;
     const { updateField, updateScore } = this.props;
@@ -189,6 +193,18 @@ class GameContainer extends React.Component {
     updateField(nextField);
   }
 
+  updateGameState = () => {
+    const { game } = this.props.znva;
+
+    if (game !== 'over') {
+      const possibleMoves = this.getPossibleMoves();
+
+      if (!possibleMoves) {
+        this.props.setGameState('over');
+      }
+    }
+  }
+
   update = (render, epsilon) => {
     if (render) {
       const { field } = this.props.znva;
@@ -198,7 +214,7 @@ class GameContainer extends React.Component {
   }
 
   render() {
-    const { field } = this.props.znva;
+    const { field, game } = this.props.znva;
 
     return (
       <div>
@@ -220,7 +236,8 @@ const mapDispatchToProps = (dispatch) => {
     initialise: (field) => dispatch(initialise(field)),
     updateField: (field) => dispatch(updateField(field)),
     updateRenderedField: (field) => dispatch(updateRenderedField(field)),
-    updateScore: (score) => dispatch(updateScore(score))
+    updateScore: (score) => dispatch(updateScore(score)),
+    setGameState: (game) => dispatch(setGameState(game))
   }
 }
 

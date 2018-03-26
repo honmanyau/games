@@ -13,14 +13,14 @@ const Container = styled.div`
 
 class UIContainer extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
-    const { score } = this.props.znva;
-    const { score: nextScore } = nextProps.znva;
+    const { score, game } = this.props.znva;
+    const { score: nextScore, game: nextGame } = nextProps.znva;
 
-    return score !== nextScore;
+    return score !== nextScore || game !== nextGame;
   }
 
   render() {
-    const { score } = this.props.znva;
+    const { score, game } = this.props.znva;
 
     return (
       <Container>SCORE: {score}</Container>

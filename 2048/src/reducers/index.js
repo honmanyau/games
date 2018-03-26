@@ -2,7 +2,8 @@ import {
   INITIALISE,
   UPDATE_FIELD,
   UPDATE_RENDERED_FIELD,
-  UPDATE_SCORE
+  UPDATE_SCORE,
+  SET_GAME_STATE
 } from '../actions';
 
 
@@ -12,7 +13,7 @@ const initialState = {
   prevField: null,
   renderedField: Array.from(Array(4)).map(() => Array.from(Array(4))),
   score: 0,
-  nya: null
+  game: ''
 };
 
 export default function znva(state = initialState, action) {
@@ -37,6 +38,11 @@ export default function znva(state = initialState, action) {
     case UPDATE_SCORE:
       return Object.assign({}, deepClonedState, {
         score: state.score + payload.score
+      });
+
+    case SET_GAME_STATE:
+      return Object.assign({}, deepClonedState, {
+        game: payload.game
       });
 
     default:

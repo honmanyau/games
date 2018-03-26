@@ -5,23 +5,24 @@ import styled from 'styled-components';
 
 
 const Container = styled.div`
-  margin: 20px 0;
+  margin: 10px 0;
   text-align: center;
   font-size: 24px;
-  color: #333;
+  line-height: 1.618;
   font-variant: small-caps;
+  color: #333;
 `;
 
 class ScoreContainer extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
-    const { score, game } = this.props.znva;
-    const { score: nextScore, game: nextGame } = nextProps.znva;
+    const { score } = this.props.znva;
+    const { score: nextScore } = nextProps.znva;
 
-    return score !== nextScore || game !== nextGame;
+    return score !== nextScore;
   }
 
   render() {
-    const { score, game } = this.props.znva;
+    const { score } = this.props.znva;
 
     return (
       <Container>SCORE: {score}</Container>

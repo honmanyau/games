@@ -24,7 +24,7 @@ class GameContainer extends React.Component {
 
   componentDidMount() {
     window.addEventListener('keypress', this.handleInput);
-    this.addTile();
+    this.props.initialise();
     this.props.subscribeToCirclet(this.update);
   }
 
@@ -129,7 +129,10 @@ class GameContainer extends React.Component {
     const { field: unrotatedField } = this.props.znva;
     const rotatedField = this.rotateField(unrotatedField, 'clockwise');
     const len = unrotatedField.length;
-    let possibleMoves = 0;
+    const emptyTiles = unrotatedField.join(',').split(',').filter((tile) => {
+      return !tile;
+    });
+    let possibleMoves = emptyTiles.length;
 
     [unrotatedField, rotatedField].forEach((field) => {
       field.forEach((row, rowIndex) => {
@@ -217,9 +220,7 @@ class GameContainer extends React.Component {
     const { field, game } = this.props.znva;
 
     return (
-      <div>
-        <PlayingField field={field} />
-      </div>
+      <PlayingField field={field} />
     );
   }
 }
@@ -233,7 +234,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     subscribeToCirclet: (fn) => dispatch(subscribeToCirclet(fn)),
-    initialise: (field) => dispatch(initialise(field)),
+    initialise: () => dispatch(initialise()),
     updateField: (field) => dispatch(updateField(field)),
     updateRenderedField: (field) => dispatch(updateRenderedField(field)),
     updateScore: (score) => dispatch(updateScore(score)),

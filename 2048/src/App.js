@@ -4,7 +4,9 @@ import styled from 'styled-components';
 import { MEDIA_MAX_WIDTH } from './constants';
 
 import GameContainer from './GameContainer';
-import UIContainer from './UIContainer';
+import ScoreContainer from './ScoreContainer';
+import GameOverContainer from './GameOverContainer';
+
 
 
 const Container = styled.div`
@@ -19,12 +21,26 @@ const GridItem = styled.div`
   grid-column: ${props => props.column};
 `;
 
+const GameGrid = GridItem.extend`
+  width: 400px;
+  height: 400px;
+  position: relative;
+
+  @media (max-width: ${MEDIA_MAX_WIDTH}px) {
+    width: 100vw;
+    height: 100vw;
+  }
+`;
+
 class App extends React.Component {
   render() {
     return (
       <Container>
-        <GridItem row="2"><UIContainer /></GridItem>
-        <GridItem row="3"><GameContainer /></GridItem>
+        <GridItem row="2"><ScoreContainer /></GridItem>
+        <GameGrid row="3">
+          <GameContainer />
+          <GameOverContainer />
+        </GameGrid>
       </Container>
     );
   }

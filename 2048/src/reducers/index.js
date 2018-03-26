@@ -3,7 +3,8 @@ import {
   UPDATE_FIELD,
   UPDATE_RENDERED_FIELD,
   UPDATE_SCORE,
-  SET_GAME_STATE
+  SET_GAME_STATE,
+  RESTART
 } from '../actions';
 
 
@@ -22,6 +23,12 @@ export default function znva(state = initialState, action) {
 
   switch(type) {
     case INITIALISE:
+      return Object.assign({}, JSON.parse(JSON.stringify(initialState)), {
+        field: payload.field,
+        prevField: deepClonedState.field,
+        renderedField: payload.field
+      });
+
     case UPDATE_FIELD:
       const prevField = JSON.parse(JSON.stringify(state.field));
 
@@ -44,6 +51,9 @@ export default function znva(state = initialState, action) {
       return Object.assign({}, deepClonedState, {
         game: payload.game
       });
+
+    case RESTART:
+      return Object.assign({}, JSON.parse(JSON.stringify(initialState)));
 
     default:
       return state;

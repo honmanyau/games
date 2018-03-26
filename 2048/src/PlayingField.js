@@ -6,18 +6,14 @@ import { MEDIA_MAX_WIDTH } from './constants';
 
 
 const Container = styled.div`
-  width: 400px;
-  height: 400px;
+  width: 100%;
+  height: 100%;
+  position: absolute;
   padding: 5px;
   display: grid;
   grid-template: repeat(4, 1fr) / repeat(4, 1fr);
   grid-gap: 5px;
   box-sizing: border-box;
-
-  @media (max-width: ${MEDIA_MAX_WIDTH}px) {
-    width: 100vw;
-    height: 100vw;
-  }
 `;
 
 const Tile = styled.div`
@@ -32,12 +28,12 @@ const Tile = styled.div`
 
 const playingField = ({ field }) => {
   const flattenedField = field.join(',').split(',');
-  const cells = flattenedField.map((val, index) => {
+  const tiles = flattenedField.map((val, index) => {
     return <Tile key={index} val={val}>{val}</Tile>;
   });
 
   return(
-     <Container>{cells}</Container>
+     <Container>{tiles}</Container>
   );
 }
 

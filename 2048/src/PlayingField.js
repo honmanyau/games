@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import { MEDIA_MAX_WIDTH } from './constants';
+
 
 
 const Container = styled.div`
@@ -12,7 +14,7 @@ const Container = styled.div`
   grid-gap: 5px;
   box-sizing: border-box;
 
-  @media (max-width: 399px) {
+  @media (max-width: ${MEDIA_MAX_WIDTH}px) {
     width: 100vw;
     height: 100vw;
   }

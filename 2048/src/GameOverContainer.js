@@ -4,8 +4,6 @@ import styled from 'styled-components';
 
 import { initialise } from './actions';
 
-import { MEDIA_MAX_WIDTH } from './constants';
-
 
 
 const Container = styled.div`

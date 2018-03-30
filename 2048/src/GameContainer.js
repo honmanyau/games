@@ -4,22 +4,39 @@ import { subscribeToCirclet } from 'circlet';
 
 import {
   initialise,
-  updateField,
+  setField,
   updateRenderedField,
+  setMoveDirection,
   updateScore,
-  setGameState
+  setAnimationProgress,
+  setGameState,
 } from './actions';
 
 import PlayingField from './PlayingField';
 
 
 
-class GameContainer extends React.Component {
-  shouldComponentUpdate(nextProps, nextState) {
-    const renderedField = JSON.stringify(this.props.znva.renderedField);
-    const nextRenderedField = JSON.stringify(nextProps.znva.renderedField);
+const ANIMATION_STEP_SIZE = 0.25;
 
-    return nextRenderedField !== renderedField;
+class GameContainer extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.targetField = null;
+    this.animationField = null;
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const { znva } = this.props;
+    const { znva: nextZnva } = nextProps;
+    const { animationProgress } = znva;
+    const { animationProgress: nextAnimationProgress } = nextZnva;
+    const renderedField = JSON.stringify(znva.renderedField);
+    const nextRenderedField = JSON.stringify(nextZnva.renderedField);
+    const animating = animationProgress !== nextAnimationProgress;
+    const fieldChanged = nextRenderedField !== renderedField;
+
+    return fieldChanged || animating;
   }
 
   componentDidMount() {
@@ -35,10 +52,11 @@ class GameContainer extends React.Component {
   handleInput = (event) => {
     event.preventDefault();
 
+    const { key } = event;
     let x = 0;
     let y = 0;
 
-    switch(event.key) {
+    switch(key) {
       case 'ArrowUp':
         y = -1;
         break;
@@ -59,51 +77,30 @@ class GameContainer extends React.Component {
         break;
     }
 
-    if (x || y) {
-      this.moveTiles(x, y);
-      this.addTile();
+    if (!this.props.znva.moveDirection) {
+      this.props.setMoveDirection({ x, y });
     }
-
-    this.updateGameState();
   }
 
-  addTile = () => {
-    const { stringify } = JSON;
-    const { updateField } = this.props;
-    const { field, prevField } = this.props.znva;
-    const fieldChanged = stringify(field) !== stringify(prevField);
+  addTile = (field) => {
+    const emptyPositions = [];
 
-    if (fieldChanged) {
-      const nextField = this.deepClone(field);
-      const len = nextField.length;
-      const emptyTiles = nextField.join(',').split(',').filter((tile) => !tile);
-      const fieldIsFull = emptyTiles.length === 0;
+    field.forEach((row, rowIndex) => {
+      row.forEach((tile, tileIndex) => {
+        const { type } = tile;
 
-      if (fieldIsFull) {
-        return 'full';
-      }
-      else {
-        const emptyPositions = [];
-
-        for (let y = 0; y < len; y ++) {
-          for (let x = 0; x < len; x++) {
-            const tile = nextField[y][x];
-
-            if (!tile) {
-              emptyPositions.push({ x, y });
-            }
-          }
+        if (!type) {
+          emptyPositions.push({ x: tileIndex, y: rowIndex });
         }
+      });
+    });
 
-        const randomNum = Math.floor(Math.random() * emptyPositions.length);
-        const { x, y } = emptyPositions[randomNum];
+    const numOfPos = emptyPositions.length;
 
-        nextField[y][x] = 2;
+    if (numOfPos) {
+      const randomPos = emptyPositions[Math.floor(Math.random() * numOfPos)];
 
-        updateField(nextField);
-
-        return 'added';
-      }
+      field[randomPos.y][randomPos.x].type = 2;
     }
   }
 
@@ -125,102 +122,186 @@ class GameContainer extends React.Component {
     return rotateField;
   }
 
-  getPossibleMoves = () => {
-    const { field: unrotatedField } = this.props.znva;
-    const rotatedField = this.rotateField(unrotatedField, 'clockwise');
-    const len = unrotatedField.length;
-    const emptyTiles = unrotatedField.join(',').split(',').filter((tile) => {
-      return !tile;
-    });
-    let possibleMoves = emptyTiles.length;
+  gameOverCheck = () => {
+    const { field } = this.props.znva;
+    const len = field.length;
+    const lastPos = len - 1;
+    let possibleMoves = 0;
+    console.log(JSON.stringify(field))
 
-    [unrotatedField, rotatedField].forEach((field) => {
-      field.forEach((row, rowIndex) => {
-        const filteredRow = row.filter((tile, tileIndex) => {
-          return tile !== row[tileIndex + 1]
-        });
+    for (let y = 0; y < lastPos && !possibleMoves; y++) {
+      const row = field[y];
+      const filteredRow = row.filter((tile, index) => (
+        tile.type !== (row[index + 1] || { type: '-' }).type
+      ));
 
-        possibleMoves += len - filteredRow.length;
-      });
-    });
-
-    return possibleMoves;
-  }
-
-  moveTiles = (x, y) => {
-    const { deepClone, rotateField } = this;
-    const { updateField, updateScore } = this.props;
-    const len = this.props.znva.field.length;
-    let field = deepClone(this.props.znva.field);
-    let nextField;
-    let score = 0;
-
-    if (!x && y) {
-      field = rotateField(field, 'clockwise');
+      possibleMoves += len - filteredRow.length;
     }
 
-    nextField = field.map((row, rowIndex) => {
-      let tiles = row.filter((tile) => tile);
+    const rotatedField = this.rotateField(field, 'clockwise');
 
-      if (x === 1 || y === 1) {
-        tiles = tiles.reverse();
-      }
+    for (let y = 0; y < lastPos && !possibleMoves; y++) {
+      const col = rotatedField[y];
+      const filteredCol = col.filter((tile, index) => (
+        tile.type !== (col[index + 1] || { type: '-' }).type
+      ));
 
-      for (let i = 0; i < tiles.length; i++) {
-        const tile = tiles[i];
-        const nextTile = tiles[i + 1];
+      possibleMoves += len - filteredCol.length;
+    }
 
-        if (tile === nextTile) {
-          score += tile * 2;
-          tiles[i] = tile * 2;
-          tiles[i + 1] = null;
+    if (!possibleMoves) {
+      this.props.setGameState('over');
+    }
+  }
+
+  calculateFields = () => {
+    const { deepClone, rotateField } = this;
+    const { moveDirection, field } = this.props.znva;
+    const len = field.length;
+    const { x: dx, y: dy } = moveDirection;
+    const shouldRotate = (!dx && dy);
+    const shouldReverse = (dx || dy) > 0;
+    const animationField = deepClone(field);
+    let targetField = deepClone(field);
+    let moves = 0;
+
+    if (shouldRotate) {
+      targetField = rotateField(targetField, 'clockwise');
+    }
+
+    targetField = targetField.map((row, rowIndex) => {
+      let nextRow = deepClone(row);
+
+      nextRow = (shouldReverse) ? nextRow.reverse() : nextRow;
+      nextRow = nextRow.filter((tile) => tile.type);
+
+      for (let i = 0, lastPos = nextRow.length - 1; i < lastPos; i++) {
+        const { type } = nextRow[i];
+        const { type: nextType } = nextRow[i + 1];
+
+        if (type === nextType) {
+          const newType = type * 2;
+
+          nextRow[i].type = null;
+          nextRow[i + 1].type = newType;
+          this.props.updateScore(newType);
         }
       }
 
-      tiles = tiles.filter((tile) => tile);
+      nextRow = nextRow.filter((tile) => tile.type);
+      nextRow = nextRow.concat(
+        Array.from(Array(len - nextRow.length)).map(() => (
+          { type: null, offsetX: 0, offsetY: 0 }
+        ))
+      );
 
-      const spaces = Array.from(Array(len - tiles.length));
-      const nextRow = [...tiles, ...spaces];
+      nextRow = (shouldReverse) ? nextRow.reverse() : nextRow;
 
-      return (x === 1 || y === 1) ? nextRow.reverse() : nextRow;
+      return nextRow;
     });
 
-    if (!x && y) {
-      nextField = rotateField(nextField, 'anticlockwise');
+    if (shouldRotate) {
+      targetField = rotateField(targetField, 'anticlockwise');
     }
 
-    if (score) {
-      updateScore(score);
-    }
+    animationField.forEach((row, rowIndex) => {
+      row.forEach((tile, tileIndex) => {
+        const { type } = tile;
 
-    updateField(nextField);
+        if (type) {
+          if (dx) {
+            for (let i = tileIndex; i >= 0 && i < len; i += (dx) ) {
+              const { type: targetType } = (
+                (targetField[rowIndex] || [])[i] || { type: '-' }
+              );
+
+              if (!targetType) {
+                tile.offsetX += dx;
+                moves += Math.abs(dx);
+              }
+              else {
+                break;
+              }
+            }
+          }
+          else if (dy) {
+            for (let i = rowIndex; i >= 0 && i < len; i += (dy) ) {
+              const { type: targetType } = (
+                (targetField[i] || [])[tileIndex] || { type: '-' }
+              );
+
+              if (!targetType) {
+                tile.offsetY += dy;
+                moves += Math.abs(dy);
+              }
+              else {
+                break;
+              }
+            }
+          }
+        }
+      });
+    });
+
+    this.animationField = (moves) ? animationField : null;
+    this.targetField = targetField;
   }
 
-  updateGameState = () => {
-    const { game } = this.props.znva;
-
-    if (game !== 'over') {
-      const possibleMoves = this.getPossibleMoves();
-
-      if (!possibleMoves) {
-        this.props.setGameState('over');
-      }
-    }
+  listenForInputAgain = () => {
+    this.props.setMoveDirection(null);
+    this.props.setAnimationProgress(0);
+    this.targetField = null;
+    this.animationField = null;
   }
 
   update = (render, epsilon) => {
-    if (render) {
-      const { field } = this.props.znva;
+    const gameOver = this.props.znva.game === 'over';
+    
+    if (gameOver) {
+      const {
+        calculateFields,
+        addTile,
+        listenForInputAgain,
+        gameOverCheck
+      } = this;
+      const { setAnimationProgress, setField } = this.props;
+      const { moveDirection, animationProgress } = this.props.znva;
 
-      this.props.updateRenderedField(field);
+      if (moveDirection) {
+        if (!this.targetField) {
+          calculateFields();
+          setField(this.animationField || this.targetField);
+        }
+
+        const { animationField } = this;
+
+        if (!animationField) {
+          listenForInputAgain();
+        }
+        else {
+          if (animationProgress < 1) {
+            setAnimationProgress(animationProgress + ANIMATION_STEP_SIZE);
+          }
+          else {
+            addTile(this.targetField);
+            setField(this.targetField);
+            listenForInputAgain();
+            gameOverCheck();
+          }
+        }
+      }
+
+      if (render) {
+        this.props.updateRenderedField(this.props.znva.field);
+      }
     }
   }
 
   render() {
-    const { field, game } = this.props.znva;
+    const { animationProgress, renderedField: field } = this.props.znva;
 
     return (
-      <PlayingField field={field} />
+      <PlayingField field={field} animationProgress={animationProgress} />
     );
   }
 }
@@ -235,10 +316,12 @@ const mapDispatchToProps = (dispatch) => {
   return {
     subscribeToCirclet: (fn) => dispatch(subscribeToCirclet(fn)),
     initialise: () => dispatch(initialise()),
-    updateField: (field) => dispatch(updateField(field)),
+    setField: (field) => dispatch(setField(field)),
     updateRenderedField: (field) => dispatch(updateRenderedField(field)),
+    setMoveDirection: (direction) => dispatch(setMoveDirection(direction)),
     updateScore: (score) => dispatch(updateScore(score)),
-    setGameState: (game) => dispatch(setGameState(game))
+    setAnimationProgress: (prog) => dispatch(setAnimationProgress(prog)),
+    setGameState: (game) => dispatch(setGameState(game)),
   }
 }
 

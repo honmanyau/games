@@ -1,8 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { MEDIA_MAX_WIDTH } from './constants';
-
 
 
 const COLOURS = [
@@ -17,38 +15,82 @@ const COLOURS = [
 
 const NUMBERS = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192];
 
-const Container = styled.div`
+const Container  = styled.div`
+  width: 100%;
+  height: 100%;
+`;
+
+const Background = styled.div`
+  position: aboslute;
   width: 100%;
   height: 100%;
   position: absolute;
-  padding: 5px;
+  padding: 4px;
   display: grid;
   grid-template: repeat(4, 1fr) / repeat(4, 1fr);
-  grid-gap: 5px;
+  grid-gap: 4px;
   box-sizing: border-box;
+  overflow: visible;
 `;
 
-const Tile = styled.div`
+const Tiles = Background.extend``;
+
+const Tile = styled.div.attrs({
+  style: props => ({
+    transform: `translate(
+      ${props.translateX}px,
+      ${props.translateY}px
+    )`
+  })
+})`
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 4px;
   font-size: 32px;
   color: white;
-  background: ${props => props.val ? props.colour : '#CCC'};
+  background: ${props => props.num ? props.colour : '#CCC'};
 `;
 
-const playingField = ({ field }) => {
-  const flattenedField = field.join(',').split(',');
-  const tiles = flattenedField.map((val, index) => {
-    const num = Number(val);
+const backgroundArray = Array.from(Array(4)).map(() => Array.from(Array(4)));
+const backgroundTiles = backgroundArray.map((row, rowIndex) => {
+  return row.map((tile, tileIndex) => {
+    return <Tile key={tileIndex} />;
+  })
+});
+
+const playingField = ({ field, animationProgress }) => {
+  const flattenedField = field.reduce((acc, row) => {
+    return acc.concat(row);
+  }, []);
+  const tiles = flattenedField.map((obj, index) => {
+    const { type, offsetX, offsetY } = obj;
+    const num = Number(type);
     const colour = num > 2048 ? '#ff8b94' : COLOURS[NUMBERS.indexOf(num)];
 
-    return <Tile key={index} val={val} colour={colour}>{val}</Tile>;
+    if (!type) {
+      return <div key={index}></div>;
+    }
+    else {
+      return(
+        <Tile
+          key={index}
+          num={num}
+          colour={colour}
+          translateX={offsetX * animationProgress * 99}
+          translateY={offsetY * animationProgress * 99}
+        >
+          {type}
+        </Tile>
+      );
+    }
   });
 
   return(
-     <Container>{tiles}</Container>
+    <Container>
+      <Background>{backgroundTiles}</Background>
+      <Tiles>{tiles}</Tiles>
+    </Container>
   );
 }
 

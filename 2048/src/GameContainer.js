@@ -24,6 +24,7 @@ class GameContainer extends React.Component {
 
     this.targetField = null;
     this.animationField = null;
+    this.touchStartPos = null;
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -40,7 +41,16 @@ class GameContainer extends React.Component {
   }
 
   componentDidMount() {
-    window.addEventListener('keypress', this.handleInput);
+    window.addEventListener('keypress', this.handleKeypress);
+    window.addEventListener('touchstart', this.handleTouchStart);
+    window.addEventListener('touchmove', this.handleTouchMove);
+    window.addEventListener('touchend', this.handleTouchEnd);
+    window.addEventListener('beforeunload', () => {
+      window.removeEventListener('keypress', this.handleKeypress);
+      window.removeEventListener('touchstart', this.handleTouchStart);
+      window.removeEventListener('touchmove', this.handleTouchMove);
+      window.removeEventListener('touchend', this.handleTouchEnd);
+    });
     this.props.initialise();
     this.props.subscribeToCirclet(this.update);
   }
@@ -49,7 +59,7 @@ class GameContainer extends React.Component {
     return JSON.parse(JSON.stringify(obj));
   }
 
-  handleInput = (event) => {
+  handleKeypress = (event) => {
     event.preventDefault();
 
     const { key } = event;
@@ -79,6 +89,46 @@ class GameContainer extends React.Component {
 
     if (!this.props.znva.moveDirection) {
       this.props.setMoveDirection({ x, y });
+    }
+  }
+
+  handleTouchStart = (event) => {
+    event.preventDefault();
+
+    const touch = event.changedTouches[0];
+    const { pageX, pageY } = touch;
+
+    this.touchStartPos = { x: pageX, y: pageY };
+  }
+
+  handleTouchMove = (event) => {
+    event.preventDefault();
+  }
+
+  handleTouchEnd = (event) => {
+    event.preventDefault();
+
+    const touch = event.changedTouches[0];
+    const { pageX, pageY } = touch;
+    const { x: startX, y: startY } = this.touchStartPos;
+    const deltaX = pageX - startX;
+    const deltaY = pageY - startY;
+    const magnitudeX = Math.abs(deltaX);
+    const magnitudeY = Math.abs(deltaY);
+    const validSwipe = (magnitudeX > 25) || (magnitudeY > 25);
+
+    if (validSwipe) {
+      const move = { x: 0, y: 0 };
+      const isHorizontalMove = magnitudeX > magnitudeY;
+
+      if (isHorizontalMove) {
+        move.x = deltaX / magnitudeX;
+      }
+      else {
+        move.y = deltaY / magnitudeY;
+      }
+
+      this.props.setMoveDirection(move);
     }
   }
 

@@ -1,19 +1,27 @@
 import {
   INITIALISE,
-  UPDATE_FIELD,
+  SET_FIELD,
   UPDATE_RENDERED_FIELD,
+  SET_MOVE_DIRECTION,
   UPDATE_SCORE,
+  SET_ANIMATION_PROGRESS,
   SET_GAME_STATE,
-  RESTART
 } from '../actions';
 
 
 
+const initialField = Array.from(Array(4)).map(() => {
+  return Array.from(Array(4)).map(() => {
+    return { type: null, offsetX: 0, offsetY: 0 }
+  });
+});
+
 const initialState = {
-  field: Array.from(Array(4)).map(() => Array.from(Array(4))),
-  prevField: null,
-  renderedField: Array.from(Array(4)).map(() => Array.from(Array(4))),
+  field: initialField,
+  renderedField: initialField,
+  moveDirection: null,
   score: 0,
+  animationProgress: 0,
   game: ''
 };
 
@@ -25,16 +33,12 @@ export default function znva(state = initialState, action) {
     case INITIALISE:
       return Object.assign({}, JSON.parse(JSON.stringify(initialState)), {
         field: payload.field,
-        prevField: deepClonedState.field,
         renderedField: payload.field
       });
 
-    case UPDATE_FIELD:
-      const prevField = JSON.parse(JSON.stringify(state.field));
-
+    case SET_FIELD:
       return Object.assign({}, deepClonedState, {
-        field: payload.field,
-        prevField: prevField
+        field: payload.field
       });
 
     case UPDATE_RENDERED_FIELD:
@@ -42,18 +46,25 @@ export default function znva(state = initialState, action) {
         renderedField: payload.renderedField
       });
 
+    case SET_MOVE_DIRECTION:
+      return Object.assign({}, deepClonedState, {
+        moveDirection: payload.moveDirection
+      });
+
     case UPDATE_SCORE:
       return Object.assign({}, deepClonedState, {
         score: state.score + payload.score
+      });
+
+    case SET_ANIMATION_PROGRESS:
+      return Object.assign({}, deepClonedState, {
+        animationProgress: payload.animationProgress
       });
 
     case SET_GAME_STATE:
       return Object.assign({}, deepClonedState, {
         game: payload.game
       });
-
-    case RESTART:
-      return Object.assign({}, JSON.parse(JSON.stringify(initialState)));
 
     default:
       return state;

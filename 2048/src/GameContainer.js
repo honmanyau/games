@@ -127,7 +127,6 @@ class GameContainer extends React.Component {
     const len = field.length;
     const lastPos = len - 1;
     let possibleMoves = 0;
-    console.log(JSON.stringify(field))
 
     for (let y = 0; y < lastPos && !possibleMoves; y++) {
       const row = field[y];
@@ -256,8 +255,8 @@ class GameContainer extends React.Component {
 
   update = (render, epsilon) => {
     const gameOver = this.props.znva.game === 'over';
-    
-    if (gameOver) {
+
+    if (!gameOver) {
       const {
         calculateFields,
         addTile,

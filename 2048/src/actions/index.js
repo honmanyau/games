@@ -7,17 +7,16 @@ export const SET_ANIMATION_PROGRESS = 'SET_ANIMATION_PROGRESS';
 export const SET_GAME_STATE = 'SET_GAME_STATE';
 
 export function initialise() {
-  const field = Array.from(Array(4)).map((n, x) => {
-    return Array.from(Array(4)).map((n, i) => {
-      return { type: (i + 1) * (x + 1), offsetX: 0, offsetY: 0 };
+  const field = Array.from(Array(4)).map(() => {
+    return Array.from(Array(4)).map(() => {
+      return { type: null, offsetX: 0, offsetY: 0 };
     });
   })
   const len = field.length;
   const x = Math.floor(Math.random() * len);
   const y = Math.floor(Math.random() * len);
 
-  // field[y][x].type = 2;
-  field[0][0].type = 2;
+  field[y][x].type = 2;
 
   return {
     type: INITIALISE,

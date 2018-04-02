@@ -199,7 +199,6 @@ class GameContainer extends React.Component {
     }
 
     if (!possibleMoves) {
-      console.log('Game over!');
       this.props.setGameState('over');
     }
   }

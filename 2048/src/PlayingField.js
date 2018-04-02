@@ -60,6 +60,9 @@ const backgroundTiles = backgroundArray.map((row, rowIndex) => {
 });
 
 const playingField = ({ field, animationProgress }) => {
+  const width = Math.min(400, window.innerWidth);
+  const gapWidth = 4;
+  const animationWidth = (width - gapWidth * 5) / 4 + gapWidth;
   const flattenedField = field.reduce((acc, row) => {
     return acc.concat(row);
   }, []);
@@ -77,8 +80,8 @@ const playingField = ({ field, animationProgress }) => {
           key={index}
           num={num}
           colour={colour}
-          translateX={offsetX * animationProgress * 99}
-          translateY={offsetY * animationProgress * 99}
+          translateX={offsetX * animationProgress * animationWidth}
+          translateY={offsetY * animationProgress * animationWidth}
         >
           {type}
         </Tile>

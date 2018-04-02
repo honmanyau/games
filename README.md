@@ -21,6 +21,13 @@ here it is.
 
 ## 2048
 
-2048 is a clone of the [original](https://gabrielecirulli.github.io/2048/)
-made with React. It is a relatively simple game and the main goal is to
-practise making a mobile friendly web-app with support for touch/swipe gestures.
+2048 is a clone of the
+[kind of original original](https://gabrielecirulli.github.io/2048/)
+(it's a clone of a clone apparently) made with React. It is a relatively simple
+game and the main goal is to practise making a mobile friendly web-app with
+support for touch/swipe gestures.
+
+This clone does not work on older devices as it uses CSS Grid and there is no
+fallback. It could have been coded without CSS Grid but I wanted the practice
+and, at the time of writing, I'm still not sure how I should feel about
+providing fallback options eternally.

@@ -180,25 +180,35 @@ class GameContainer extends React.Component {
 
     for (let y = 0; y < lastPos && !possibleMoves; y++) {
       const row = field[y];
-      const filteredRow = row.filter((tile, index) => (
-        tile.type !== (row[index + 1] || { type: '-' }).type
-      ));
+      const filteredRow = row.filter((tile, index) => {
+        const nextTile = field[y][index];
+        const { type } = tile;
+        const { type: nextType } = nextTile;
 
-      possibleMoves += len - filteredRow.length;
+        return !nextTile || (type === nextType);
+      });
+
+      possibleMoves += filteredRow.length;
     }
 
     const rotatedField = this.rotateField(field, 'clockwise');
 
-    for (let y = 0; y < lastPos && !possibleMoves; y++) {
-      const col = rotatedField[y];
-      const filteredCol = col.filter((tile, index) => (
-        tile.type !== (col[index + 1] || { type: '-' }).type
-      ));
+    for (let x = 0; x < lastPos && !possibleMoves; x++) {
+      const col = rotatedField[x];
+      const filteredCol = col.filter((tile, index) => {
+        const nextTile = field[x][index];
+        const { type } = tile;
+        const { type: nextType } = nextTile;
 
-      possibleMoves += len - filteredCol.length;
+        return !nextTile || (type === nextType);
+      });
+
+      possibleMoves += filteredCol.length;
     }
 
     if (!possibleMoves) {
+      console.log(JSON.stringify(field));
+      console.log(JSON.stringify(rotatedField));
       this.props.setGameState('over');
     }
   }

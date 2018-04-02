@@ -176,39 +176,30 @@ class GameContainer extends React.Component {
     const { field } = this.props.znva;
     const len = field.length;
     const lastPos = len - 1;
-    let possibleMoves = 0;
+    let possibleMoves = 0; // This is not actually all the possible moves
 
-    for (let y = 0; y < lastPos && !possibleMoves; y++) {
-      const row = field[y];
-      const filteredRow = row.filter((tile, index) => {
-        const nextTile = field[y][index];
+    for (let y = 0; y < len && !possibleMoves; y++) {
+      for (let x = 0; x < lastPos && !possibleMoves; x++) {
+        const tile = field[y][x];
         const { type } = tile;
-        const { type: nextType } = nextTile;
 
-        return !nextTile || (type === nextType);
-      });
+        if (!type) {
+          possibleMoves += 2;
+        }
+        else {
+          const rightTile = field[y][x + 1];
+          const bottomTile = (field[y + 1] || [])[x] || { type: '-' };
+          const { type: rightType } = rightTile;
+          const { type: bottomType } = bottomTile;
 
-      possibleMoves += filteredRow.length;
-    }
-
-    const rotatedField = this.rotateField(field, 'clockwise');
-
-    for (let x = 0; x < lastPos && !possibleMoves; x++) {
-      const col = rotatedField[x];
-      const filteredCol = col.filter((tile, index) => {
-        const nextTile = field[x][index];
-        const { type } = tile;
-        const { type: nextType } = nextTile;
-
-        return !nextTile || (type === nextType);
-      });
-
-      possibleMoves += filteredCol.length;
+          possibleMoves += (!rightType) + (!bottomType)
+            + (type === rightType) + (type === bottomType);
+        }
+      }
     }
 
     if (!possibleMoves) {
-      console.log(JSON.stringify(field));
-      console.log(JSON.stringify(rotatedField));
+      console.log('Game over!');
       this.props.setGameState('over');
     }
   }

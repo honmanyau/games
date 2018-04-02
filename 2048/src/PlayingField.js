@@ -18,10 +18,10 @@ const NUMBERS = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192];
 const Container  = styled.div`
   width: 100%;
   height: 100%;
+  position: absolute;
 `;
 
 const Background = styled.div`
-  position: aboslute;
   width: 100%;
   height: 100%;
   position: absolute;

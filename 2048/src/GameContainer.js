@@ -22,6 +22,7 @@ class GameContainer extends React.Component {
   constructor(props) {
     super(props);
 
+    this.initialised = true;
     this.targetField = null;
     this.animationField = null;
     this.touchStartPos = null;
@@ -41,17 +42,9 @@ class GameContainer extends React.Component {
   }
 
   componentDidMount() {
-    const rootDiv = document.getElementById('root');
-
-    window.addEventListener('keypress', this.handleKeypress);
-    rootDiv.addEventListener('touchstart', this.handleTouchStart);
-    rootDiv.addEventListener('touchmove', this.handleTouchMove);
-    rootDiv.addEventListener('touchend', this.handleTouchEnd);
+    this.addInputListeners();
     window.addEventListener('beforeunload', () => {
-      window.removeEventListener('keypress', this.handleKeypress);
-      rootDiv.removeEventListener('touchstart', this.handleTouchStart);
-      rootDiv.removeEventListener('touchmove', this.handleTouchMove);
-      rootDiv.removeEventListener('touchend', this.handleTouchEnd);
+      this.removeInputListeners();
     });
     this.props.initialise();
     this.props.subscribeToCirclet(this.update);
@@ -59,6 +52,24 @@ class GameContainer extends React.Component {
 
   deepClone = (obj) => {
     return JSON.parse(JSON.stringify(obj));
+  }
+
+  addInputListeners = () => {
+    const rootDiv = document.getElementById('root');
+
+    window.addEventListener('keypress', this.handleKeypress);
+    rootDiv.addEventListener('touchstart', this.handleTouchStart);
+    rootDiv.addEventListener('touchmove', this.handleTouchMove);
+    rootDiv.addEventListener('touchend', this.handleTouchEnd);
+  }
+
+  removeInputListeners = () => {
+    const rootDiv = document.getElementById('root');
+
+    window.removeEventListener('keypress', this.handleKeypress);
+    rootDiv.removeEventListener('touchstart', this.handleTouchStart);
+    rootDiv.removeEventListener('touchmove', this.handleTouchMove);
+    rootDiv.removeEventListener('touchend', this.handleTouchEnd);
   }
 
   handleKeypress = (event) => {
@@ -302,7 +313,7 @@ class GameContainer extends React.Component {
     this.targetField = targetField;
   }
 
-  listenForInputAgain = () => {
+  relistenForInputAfterAnimation = () => {
     this.props.setMoveDirection(null);
     this.props.setAnimationProgress(0);
     this.targetField = null;
@@ -310,13 +321,14 @@ class GameContainer extends React.Component {
   }
 
   update = (render, epsilon) => {
+    const { initialised } = this;
     const gameOver = this.props.znva.game === 'over';
 
     if (!gameOver) {
       const {
         calculateFields,
         addTile,
-        listenForInputAgain,
+        relistenForInputAfterAnimation,
         gameOverCheck
       } = this;
       const { setAnimationProgress, setField } = this.props;
@@ -331,7 +343,7 @@ class GameContainer extends React.Component {
         const { animationField } = this;
 
         if (!animationField) {
-          listenForInputAgain();
+          relistenForInputAfterAnimation();
         }
         else {
           if (animationProgress < 1) {
@@ -340,7 +352,7 @@ class GameContainer extends React.Component {
           else {
             addTile(this.targetField);
             setField(this.targetField);
-            listenForInputAgain();
+            relistenForInputAfterAnimation();
             gameOverCheck();
           }
         }
@@ -349,6 +361,15 @@ class GameContainer extends React.Component {
       if (render) {
         this.props.updateRenderedField(this.props.znva.field);
       }
+    }
+    else if (initialised) {
+      const rootDiv = document.getElementById('root');
+
+      rootDiv.removeEventListener('touchstart', this.handleTouchStart);
+      rootDiv.removeEventListener('touchmove', this.handleTouchMove);
+      rootDiv.removeEventListener('touchend', this.handleTouchEnd);
+
+      this.initialised = false;
     }
   }
 

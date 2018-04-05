@@ -41,15 +41,17 @@ class GameContainer extends React.Component {
   }
 
   componentDidMount() {
+    const rootDiv = document.getElementById('root');
+
     window.addEventListener('keypress', this.handleKeypress);
-    window.addEventListener('touchstart', this.handleTouchStart);
-    window.addEventListener('touchmove', this.handleTouchMove);
-    window.addEventListener('touchend', this.handleTouchEnd);
+    rootDiv.addEventListener('touchstart', this.handleTouchStart);
+    rootDiv.addEventListener('touchmove', this.handleTouchMove);
+    rootDiv.addEventListener('touchend', this.handleTouchEnd);
     window.addEventListener('beforeunload', () => {
       window.removeEventListener('keypress', this.handleKeypress);
-      window.removeEventListener('touchstart', this.handleTouchStart);
-      window.removeEventListener('touchmove', this.handleTouchMove);
-      window.removeEventListener('touchend', this.handleTouchEnd);
+      rootDiv.removeEventListener('touchstart', this.handleTouchStart);
+      rootDiv.removeEventListener('touchmove', this.handleTouchMove);
+      rootDiv.removeEventListener('touchend', this.handleTouchEnd);
     });
     this.props.initialise();
     this.props.subscribeToCirclet(this.update);

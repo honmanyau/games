@@ -10,7 +10,7 @@ import GameOverContainer from './GameOverContainer';
 
 
 const Container = styled.div`
-  height: 100vh;
+  height: 85vh;
   display: grid;
   grid-template-rows: 1fr 50px 1fr 1fr;
   justify-content: center;

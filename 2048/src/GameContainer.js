@@ -22,7 +22,6 @@ class GameContainer extends React.Component {
   constructor(props) {
     super(props);
 
-    this.initialised = true;
     this.targetField = null;
     this.animationField = null;
     this.touchStartPos = null;
@@ -321,7 +320,6 @@ class GameContainer extends React.Component {
   }
 
   update = (render, epsilon) => {
-    const { initialised } = this;
     const gameOver = this.props.znva.game === 'over';
 
     if (!gameOver) {
@@ -361,15 +359,6 @@ class GameContainer extends React.Component {
       if (render) {
         this.props.updateRenderedField(this.props.znva.field);
       }
-    }
-    else if (initialised) {
-      const rootDiv = document.getElementById('root');
-
-      rootDiv.removeEventListener('touchstart', this.handleTouchStart);
-      rootDiv.removeEventListener('touchmove', this.handleTouchMove);
-      rootDiv.removeEventListener('touchend', this.handleTouchEnd);
-
-      this.initialised = false;
     }
   }
 

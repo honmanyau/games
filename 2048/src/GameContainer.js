@@ -155,21 +155,19 @@ class GameContainer extends React.Component {
   }
 
   rotateField = (field, direction) => {
+    const refField = this.deepClone(field);
     const size = field.length - 1;
-    const rotateField = field.map((row, rowIndex) => {
-      return row.map((tile, tileIndex) => {
+
+    field.forEach((row, rowIndex) => {
+      row.forEach((tile, tileIndex) => {
         if (direction === 'clockwise') {
-          return field[tileIndex][size - rowIndex];
+          field[rowIndex][tileIndex] = refField[size - tileIndex][rowIndex];
         }
         if (direction === 'anticlockwise') {
-          return field[size - tileIndex][rowIndex];
+          field[rowIndex][tileIndex] = refField[tileIndex][size - rowIndex];
         }
-
-        return row;
       });
     });
-
-    return rotateField;
   }
 
   gameOverCheck = () => {
@@ -208,49 +206,55 @@ class GameContainer extends React.Component {
     const { moveDirection, field } = this.props.znva;
     const len = field.length;
     const { x: dx, y: dy } = moveDirection;
-    const shouldRotate = (!dx && dy);
-    const shouldReverse = (dx || dy) > 0;
+    const rotate = !!dy;
+    const reverse = (dy || dx) > 0;
     const animationField = deepClone(field);
     let targetField = deepClone(field);
     let moves = 0;
 
-    if (shouldRotate) {
-      targetField = rotateField(targetField, 'clockwise');
+    if (rotate) {
+      rotateField(targetField, 'anticlockwise');
     }
 
     targetField = targetField.map((row, rowIndex) => {
-      let nextRow = deepClone(row);
+      row = row.filter((tile) => tile.type);
 
-      nextRow = (shouldReverse) ? nextRow.reverse() : nextRow;
-      nextRow = nextRow.filter((tile) => tile.type);
-
-      for (let i = 0, lastPos = nextRow.length - 1; i < lastPos; i++) {
-        const { type } = nextRow[i];
-        const { type: nextType } = nextRow[i + 1];
-
-        if (type === nextType) {
-          const newType = type * 2;
-
-          nextRow[i].type = null;
-          nextRow[i + 1].type = newType;
-          this.props.updateScore(newType);
-        }
+      if (reverse) {
+        row.reverse();
       }
 
-      nextRow = nextRow.filter((tile) => tile.type);
-      nextRow = nextRow.concat(
-        Array.from(Array(len - nextRow.length)).map(() => (
-          { type: null, offsetX: 0, offsetY: 0 }
-        ))
-      );
+      row.forEach((tile, index) => {
+        const nextIndex = index + 1;
+        const nextTile = row[nextIndex];
 
-      nextRow = (shouldReverse) ? nextRow.reverse() : nextRow;
+        if (nextTile) {
+          const { type } = tile;
+          const { type: nextType } = nextTile;
 
-      return nextRow;
+          if (nextType === type) {
+            const newType = type * 2;
+
+            row[index].type = newType;
+            row[nextIndex].type = null;
+            this.props.updateScore(newType)
+          }
+        }
+      });
+
+      row = row.filter((tile) => tile.type);
+      row = row.concat(Array.from(Array(len - row.length)).map(() => (
+        { type: null, offsetX: 0, offsetY: 0 }
+      )));
+
+      if (reverse) {
+        row.reverse();
+      }
+
+      return row;
     });
 
-    if (shouldRotate) {
-      targetField = rotateField(targetField, 'anticlockwise');
+    if (rotate) {
+      rotateField(targetField, 'clockwise');
     }
 
     animationField.forEach((row, rowIndex) => {
@@ -259,7 +263,7 @@ class GameContainer extends React.Component {
 
         if (type) {
           if (dx) {
-            for (let i = tileIndex; i >= 0 && i < len; i += (dx) ) {
+            for (let i = tileIndex; i >= 0 && i < len; i += dx) {
               const { type: targetType } = (
                 (targetField[rowIndex] || [])[i] || { type: '-' }
               );
@@ -274,7 +278,7 @@ class GameContainer extends React.Component {
             }
           }
           else if (dy) {
-            for (let i = rowIndex; i >= 0 && i < len; i += (dy) ) {
+            for (let i = rowIndex; i >= 0 && i < len; i += dy) {
               const { type: targetType } = (
                 (targetField[i] || [])[tileIndex] || { type: '-' }
               );

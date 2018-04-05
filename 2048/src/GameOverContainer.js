@@ -55,7 +55,9 @@ class GameOverContainer extends React.Component {
         <Container>
           <Message>
             <div>game over</div>
-            <div onClick={initialise}><Restart>restart</Restart></div>
+            <div onClick={initialise} onTouchStart={initialise}>
+              <Restart>restart</Restart>
+            </div>
           </Message>
         </Container>
       );

@@ -10,10 +10,15 @@ import GameOverContainer from './GameOverContainer';
 
 
 const Container = styled.div`
-  height: 85vh;
+  height: 100vh;
   display: grid;
   grid-template-rows: 1fr 50px 1fr 1fr;
   justify-content: center;
+
+  @media
+    screen and (max-width: ${MEDIA_MAX_WIDTH}px) and (orientation: portrait) {
+      grid-template-rows: 1fr 50px 1fr 2fr 60px;
+    }
 `;
 
 const GridItem = styled.div`
@@ -26,10 +31,11 @@ const GameGrid = GridItem.extend`
   height: 400px;
   position: relative;
 
-  @media (max-width: ${MEDIA_MAX_WIDTH}px) {
-    width: 100vw;
-    height: 100vw;
-  }
+  @media
+    screen and (max-width: ${MEDIA_MAX_WIDTH}px) and (orientation: portrait) {
+      width: 100vw;
+      height: 100vw;
+    }
 `;
 
 class App extends React.Component {

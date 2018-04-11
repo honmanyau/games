@@ -14,6 +14,7 @@ const Container = styled.div`
   display: grid;
   grid-template-rows: 1fr 50px 1fr 1fr;
   justify-content: center;
+  align-items: center;
 
   @media
     screen and (max-width: ${MEDIA_MAX_WIDTH}px) and (orientation: portrait) {

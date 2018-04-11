@@ -47,6 +47,7 @@ const Tile = styled.div.attrs({
   justify-content: center;
   align-items: center;
   border-radius: 4px;
+  font-family: sans-serif;
   font-size: 32px;
   color: white;
   background: ${props => props.num ? props.colour : '#CCC'};

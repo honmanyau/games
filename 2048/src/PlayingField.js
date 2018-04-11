@@ -3,6 +3,8 @@ import styled from 'styled-components';
 
 
 
+const GRID_GAP = 5;
+
 const COLOURS = [
   '#b9bcff',
   '#bae1ff',
@@ -28,7 +30,7 @@ const Background = styled.div`
   padding: 4px;
   display: grid;
   grid-template: repeat(4, 1fr) / repeat(4, 1fr);
-  grid-gap: 4px;
+  grid-gap: ${GRID_GAP}px;
   box-sizing: border-box;
   overflow: visible;
 `;
@@ -46,7 +48,7 @@ const Tile = styled.div.attrs({
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 4px;
+  border-radius: ${GRID_GAP}px;
   font-family: sans-serif;
   font-size: 32px;
   color: white;
@@ -62,8 +64,7 @@ const backgroundTiles = backgroundArray.map((row, rowIndex) => {
 
 const playingField = ({ field, animationProgress }) => {
   const width = Math.min(400, window.innerWidth);
-  const gapWidth = 4;
-  const animationWidth = (width - gapWidth * 5) / 4 + gapWidth;
+  const animationWidth = (width - GRID_GAP * 5) / 4 + GRID_GAP;
   const flattenedField = field.reduce((acc, row) => {
     return acc.concat(row);
   }, []);

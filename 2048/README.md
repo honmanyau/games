@@ -7,6 +7,7 @@
 * [Installation](#installation)
 * [Implementation Details](#implementation-details)
   * [Playing Field](#playing-field)
+  * [Game Logic](#game-logic);
 
 ## Installation
 

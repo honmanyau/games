@@ -39,7 +39,7 @@ class GameContainer extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener('keypress', this.handleInput, false);
+    window.addEventListener('keydown', this.handleInput, false);
     this.props.subscribeToCirclet(this.update);
   }
 

@@ -54,9 +54,10 @@ class GameContainer extends React.Component {
   }
 
   addInputListeners = () => {
+    console.log("AYA: addInputListeners")
     const rootDiv = document.getElementById('root');
 
-    window.addEventListener('keypress', this.handleKeypress);
+    window.addEventListener('keydown', this.handlekeydown);
     rootDiv.addEventListener('touchstart', this.handleTouchStart);
     rootDiv.addEventListener('touchmove', this.handleTouchMove);
     rootDiv.addEventListener('touchend', this.handleTouchEnd);
@@ -65,13 +66,13 @@ class GameContainer extends React.Component {
   removeInputListeners = () => {
     const rootDiv = document.getElementById('root');
 
-    window.removeEventListener('keypress', this.handleKeypress);
+    rootDiv.removeEventListener('keydown', this.handlekeydown);
     rootDiv.removeEventListener('touchstart', this.handleTouchStart);
     rootDiv.removeEventListener('touchmove', this.handleTouchMove);
     rootDiv.removeEventListener('touchend', this.handleTouchEnd);
   }
 
-  handleKeypress = (event) => {
+  handlekeydown = (event) => {
     event.preventDefault();
 
     const { key } = event;
